@@ -2547,7 +2547,7 @@ const CabSearch = () => {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 p-4 md:p-6 md:ml-60 mt-20 sm:mt-0 text-white transition-all duration-300">
+      {/* <div className="flex-1 p-4 md:p-6 md:ml-60 mt-20 sm:mt-0 text-white transition-all duration-300">
         {notification && (
           <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="bg-indigo-600 text-white px-6 py-3 rounded-md shadow-lg transition-all duration-300 animate-fadeIn">
@@ -2556,7 +2556,7 @@ const CabSearch = () => {
           </div>
         )}
 
-        <h1 className="text-xl md:text-2xl font-bold mb-4">Cab Search</h1>
+        <h1 className="text-xl md:text-2xl font-bold mb-4">Cab Search</h1> */}
 
         {/* WebSocket Connection Indicator */}
         {/* <div className="flex items-center gap-2 mb-4">
@@ -2565,16 +2565,16 @@ const CabSearch = () => {
         </div> */}
 
         {/* Search and Filter Section */}
-        <div className="space-y-4 mb-6">
+        {/* <div className="space-y-4 mb-6"> */}
           {/* Search by Cab Number */}
-          <div className="flex flex-col sm:flex-row gap-2">
+          {/* <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               placeholder="Enter Cab Number"
               value={cabNumber}
               onChange={(e) => setCabNumber(e.target.value)}
               className="border p-2 rounded w-full bg-gray-700 text-white"
-            />
+            /> */}
             {/* <button
               onClick={handleSearch}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded whitespace-nowrap transition-colors"
@@ -2585,7 +2585,7 @@ const CabSearch = () => {
           </div>
 
           {/* Filter by Date */}
-          <div className="flex flex-col sm:flex-row gap-2">
+          {/* <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1 flex flex-col sm:flex-row gap-2">
               <input
                 type="date"
@@ -2599,29 +2599,29 @@ const CabSearch = () => {
                 onChange={(e) => setToDate(e.target.value)}
                 className="border p-2 rounded bg-gray-700 text-white w-full"
               />
-            </div>
+            </div> */}
             {/* <button
               onClick={handleDateFilter}
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded whitespace-nowrap transition-colors"
             >
               Filter by Date
             </button> */}
-          </div>
-        </div>
+        //   </div>
+        // </div>
 
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {/* {error && <p className="text-red-500 mb-4">{error}</p>} */}
 
         {/* Loading State */}
-        {loading ? (
-          <div className="animate-pulse space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="bg-gray-700 h-16 rounded-md"></div>
-            ))}
-          </div>
-        ) : (
-          <>
+        {/* {loading ? ( */}
+        //   <div className="animate-pulse space-y-4">
+        //     {[...Array(5)].map((_, i) => (
+        //       <div key={i} className="bg-gray-700 h-16 rounded-md"></div>
+        //     ))}
+        //   </div>
+        // ) : (
+          // <>
             {/* Desktop Table View */}
-            <div className="hidden md:block bg-gray-700 shadow-lg rounded-lg overflow-x-auto">
+            {/* <div className="hidden md:block bg-gray-700 shadow-lg rounded-lg overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-gray-800 text-white">
@@ -2636,8 +2636,8 @@ const CabSearch = () => {
                     <th className="p-2">Invoice</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {filteredCabs.length > 0 ? (
+                <tbody> */}
+                  {/* {filteredCabs.length > 0 ? (
                     filteredCabs.map((item, index) => (
                       <tr key={index} className="border-b border-gray-600 hover:bg-gray-600 transition-colors">
                         <td className="p-3">{index + 1}</td>
@@ -2648,9 +2648,9 @@ const CabSearch = () => {
                         </td>
                         <td className="p-3">
                           {item.tripDetails?.location?.from || "N/A"} → {item.tripDetails?.location?.to || "N/A"}
-                        </td>
+                        </td> */}
                         {/* <td className="p-3 text-green-500" >{item?.status} </td> */}
-                        <td
+                        {/* <td
                           className={`p-3 ${item?.status === "assigned"
                             ? "text-red-500 border-white"
                             : item?.status === "completed"
@@ -2659,8 +2659,8 @@ const CabSearch = () => {
                             }`}
                         >
                           {item?.status}
-                        </td>
-                        <td className="p-3">
+                        </td> */}
+                        {/* <td className="p-3">
                           <select
                             className="border p-1 rounded bg-gray-800 text-white"
                             onChange={(e) => e.target.value && openModal(e.target.value, item.tripDetails[e.target.value])}
@@ -2672,8 +2672,8 @@ const CabSearch = () => {
                             <option value="vehicleServicing">Servicing</option>
                             <option value="otherProblems">Other Problems</option>
                           </select>
-                        </td>
-                        <td className="p-3">
+                        </td> */}
+                        {/* <td className="p-3">
                           <div className="flex items-center gap-2">
                             <button
                               className={`text-green-400 transition-all duration-300 hover:scale-110 hover:shadow-md ${item.driver?.location ? "animate-pulse" : ""
@@ -2686,8 +2686,8 @@ const CabSearch = () => {
                             </button>
                             {item.driver?.location && <span className="text-xs text-green-400">Live</span>}
                           </div>
-                        </td>
-                        <td className="p-2">
+                        </td> */}
+                        {/* <td className="p-2"> */}
                           {/* <PDFDownloadLink
                             document={
                               <InvoicePDF
@@ -2710,10 +2710,10 @@ const CabSearch = () => {
                               </button>
                             )}
                           </PDFDownloadLink> */}
-                        </td>
+                        {/* </td>
                       </tr>
-                    ))
-                  ) : (
+                    )) */}
+                  {/* ) : (
                     <tr>
                       <td colSpan="9" className="p-4 text-center">
                         No results found
@@ -2722,7 +2722,7 @@ const CabSearch = () => {
                   )}
                 </tbody>
               </table>
-            </div>
+            </div> */}
 
             {/* Mobile Card View */}
             <div className="md:hidden space-y-3">
@@ -2802,8 +2802,8 @@ const CabSearch = () => {
                 <div className="p-4 text-center bg-gray-700 rounded-lg">No results found</div>
               )}
             </div>
-          </>
-        )}
+        //   </>
+        // )}
 
         {/* Details Modal */}
         {/* {activeModal && selectedDetail && (
@@ -2940,8 +2940,8 @@ const CabSearch = () => {
             </div>
           </div>
         )} */}
-      </div>
-    </div>
+      // </div>
+    // </div>
   )
 }
 
