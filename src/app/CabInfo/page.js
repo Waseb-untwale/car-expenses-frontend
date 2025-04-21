@@ -1516,6 +1516,7 @@ import dynamic from "next/dynamic";
 
 const InvoicePDF = dynamic(() => import("../components/InvoicePDF"), {
   ssr: false,
+  loading: () => <p>Loading invoice generator...</p>
 });
 import { MapPin, X } from 'lucide-react';
 import LeafletMap from "../components/LeafletMap";
