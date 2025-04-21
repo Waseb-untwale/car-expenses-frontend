@@ -1510,26 +1510,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Sidebar from "../slidebar/page";
 import axios from "axios";
-// import { PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import InvoicePDF from "../components/InvoicePDF";
-import dynamic from "next/dynamic";
-import dynamic from "next/dynamic";
-
-const PDFDownloadLinkWrapper = dynamic(
-  () => 
-    import("@react-pdf/renderer").then((mod) => {
-      const { PDFDownloadLink } = mod;
-      return ({ document, fileName, children }) => (
-        <PDFDownloadLink document={document} fileName={fileName}>
-          {children}
-        </PDFDownloadLink>
-      );
-    }),
-  { ssr: false }
-);
-// const InvoicePDF = dynamic(() => import("../components/InvoicePDF"), {
-//   ssr: false,
-// });
 import { MapPin, X } from 'lucide-react';
 import LeafletMap from "../components/LeafletMap";
 import baseURL from "@/utils/api";
