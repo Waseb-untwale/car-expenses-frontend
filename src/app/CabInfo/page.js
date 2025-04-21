@@ -2775,7 +2775,7 @@ const CabSearch = () => {
                         <MapPin size={16} />
                       </button>
                     </div>
-                    <PDFDownloadLink
+                    {/* <PDFDownloadLink
                       document={
                         <InvoicePDF
                           trip={item}
@@ -2795,7 +2795,7 @@ const CabSearch = () => {
                           {loading ? "Generating PDF..." : "Download Invoice"}
                         </button>
                       )}
-                    </PDFDownloadLink>
+                    </PDFDownloadLink> */}
                   </div>
                 ))
               ) : (
@@ -2852,7 +2852,7 @@ const CabSearch = () => {
         )}
 
         {/* Map Modal */}
-        {showMap && selectedDriver && (
+        {/* {showMap && selectedDriver && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
               <div className="p-4 border-b flex justify-between items-center">
@@ -2867,7 +2867,7 @@ const CabSearch = () => {
                 </button>
               </div>
 
-              {/* Route information panel */}
+           
               <div className="bg-gray-100 p-3 border-b">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-green-500"></div>
@@ -2939,7 +2939,7 @@ const CabSearch = () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   )
