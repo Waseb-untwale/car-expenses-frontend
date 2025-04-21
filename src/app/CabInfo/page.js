@@ -2305,36 +2305,36 @@ const CabSearch = () => {
   //   setSelectedDriver(null);
   // };
 
-  const handleSearch = () => {
-    setError(null)
-    if (!cabNumber) {
-      setError("Please enter a cab number")
-      return
-    }
+  // const handleSearch = () => {
+  //   setError(null)
+  //   if (!cabNumber) {
+  //     setError("Please enter a cab number")
+  //     return
+  //   }
 
-    const filtered = cabDetails.filter((item) => item.cab?.cabNumber?.toLowerCase().includes(cabNumber.toLowerCase()))
+  //   const filtered = cabDetails.filter((item) => item.cab?.cabNumber?.toLowerCase().includes(cabNumber.toLowerCase()))
 
-    setFilteredCabs(filtered)
-    if (filtered.length === 0) setError("Cab details not found")
-  }
+  //   setFilteredCabs(filtered)
+  //   if (filtered.length === 0) setError("Cab details not found")
+  // }
 
-  const handleDateFilter = () => {
-    if (fromDate && toDate && new Date(fromDate) > new Date(toDate)) {
-      setError("To date must be after From date")
-      return
-    }
+  // const handleDateFilter = () => {
+  //   if (fromDate && toDate && new Date(fromDate) > new Date(toDate)) {
+  //     setError("To date must be after From date")
+  //     return
+  //   }
 
-    const filtered = cabDetails.filter((item) => {
-      const assignedDate = new Date(item.assignedAt).toISOString().split("T")[0]
-      const startDate = fromDate || "1970-01-01"
-      const endDate = toDate || "2100-01-01"
+  //   const filtered = cabDetails.filter((item) => {
+  //     const assignedDate = new Date(item.assignedAt).toISOString().split("T")[0]
+  //     const startDate = fromDate || "1970-01-01"
+  //     const endDate = toDate || "2100-01-01"
 
-      return assignedDate >= startDate && assignedDate <= endDate
-    })
+  //     return assignedDate >= startDate && assignedDate <= endDate
+  //   })
 
-    setFilteredCabs(filtered)
-    if (filtered.length === 0) setError("No cabs found in the selected date range")
-  }
+  //   setFilteredCabs(filtered)
+  //   if (filtered.length === 0) setError("No cabs found in the selected date range")
+  // }
 
   // const openModal = (type, data) => {
   //   if (!data) {
@@ -2575,13 +2575,13 @@ const CabSearch = () => {
               onChange={(e) => setCabNumber(e.target.value)}
               className="border p-2 rounded w-full bg-gray-700 text-white"
             />
-            <button
+            {/* <button
               onClick={handleSearch}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded whitespace-nowrap transition-colors"
               disabled={loading}
             >
               {loading ? "Searching..." : "Search"}
-            </button>
+            </button> */}
           </div>
 
           {/* Filter by Date */}
@@ -2600,12 +2600,12 @@ const CabSearch = () => {
                 className="border p-2 rounded bg-gray-700 text-white w-full"
               />
             </div>
-            <button
+            {/* <button
               onClick={handleDateFilter}
               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded whitespace-nowrap transition-colors"
             >
               Filter by Date
-            </button>
+            </button> */}
           </div>
         </div>
 
