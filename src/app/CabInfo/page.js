@@ -1730,7 +1730,7 @@ const CabSearch = () => {
     const fetchAdminData = async () => {
       try {
         const id = localStorage.getItem("id")
-        const res = await axios.get(`${baseURL}api/admin/getAllSubAdmins`)
+        const res = await axios.get(`https://car-expenses-backend.vercel.app/api/admin/getAllSubAdmins`)
         const admin = res.data.subAdmins.find((el) => el._id === id)
 
         if (admin) {
@@ -1752,7 +1752,7 @@ const CabSearch = () => {
     const fetchAssignedCabs = async () => {
       setLoading(true)
       try {
-        const res = await axios.get(`${baseURL}api/assigncab`, {
+        const res = await axios.get(`https://car-expenses-backend.vercel.app/api/assigncab`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
 
