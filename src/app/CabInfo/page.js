@@ -1478,10 +1478,10 @@ import React from 'react'
 import axios from "axios";
 import Sidebar from "../slidebar/page";
 import baseURL from "@/utils/api";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import InvoicePDF from "../components/InvoicePDF";
-// Import the missing MapPin icon
-import { MapPin } from "lucide-react"; // Add this import
+// Remove PDF imports
+// import { PDFDownloadLink } from "@react-pdf/renderer";
+// import InvoicePDF from "../components/InvoicePDF";
+import { MapPin } from "lucide-react";
 
 const driverLocations = {};
 
@@ -1737,6 +1737,18 @@ const CabSearch = () => {
     }, 3000)
   }
 
+  // Handle invoice generation separately
+  const handleGenerateInvoice = (item) => {
+    // You will implement your custom PDF generation logic here
+    console.log("Generate invoice for:", item)
+    setNotification(`Preparing invoice for ${item.cab?.cabNumber}...`)
+    
+    // Clear notification after 3 seconds
+    setTimeout(() => {
+      setNotification("")
+    }, 3000)
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-800">
       <Sidebar></Sidebar>
@@ -1871,28 +1883,13 @@ const CabSearch = () => {
                           </div>
                         </td>
                         <td className="p-2">
-                          <PDFDownloadLink
-                            document={
-                              <InvoicePDF
-                                cabData={cabData}
-                                trip={item}
-                                companyLogo={companyLogo}
-                                signature={signature}
-                                companyPrefix={derivePrefix(subCompanyName)}
-                                companyInfo={companyInfo}
-                                companyName={subCompanyName}
-                                invoiceNumber={invoiceNumber || `${derivePrefix(subCompanyName)}-${String(item.invoiceSerial).padStart(5, "0")}`}
-                                invoiceDate={new Date().toLocaleDateString("en-IN")}
-                              />
-                            }
-                            fileName={`Invoice-${item?.cab?.cabNumber}.pdf`}
+                          {/* Replace PDFDownloadLink with a regular button */}
+                          <button 
+                            onClick={() => handleGenerateInvoice(item)}
+                            className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
                           >
-                            {({ loading }) => (
-                              <button className="w-full bg-green-600 text-white px-4 py-2 rounded">
-                                {loading ? "Generating PDF..." : "Download Invoice"}
-                              </button>
-                            )}
-                          </PDFDownloadLink>
+                            Generate Invoice
+                          </button>
                         </td>
                       </tr>
                     ))
@@ -1958,27 +1955,13 @@ const CabSearch = () => {
                         <MapPin size={16} />
                       </button>
                     </div>
-                    <PDFDownloadLink
-                      document={
-                        <InvoicePDF
-                          trip={item}
-                          companyLogo={companyLogo}
-                          signature={signature}
-                          companyPrefix={derivePrefix(subCompanyName)}
-                          companyInfo={companyInfo}
-                          companyName={subCompanyName}
-                          invoiceNumber={invoiceNumber || `${derivePrefix(subCompanyName)}-${String(item.invoiceSerial).padStart(5, "0")}`}
-                          invoiceDate={new Date().toLocaleDateString("en-IN")}
-                        />
-                      }
-                      fileName={`Invoice-${item?.cab?.cabNumber}.pdf`}
+                    {/* Replace PDFDownloadLink with a regular button */}
+                    <button 
+                      onClick={() => handleGenerateInvoice(item)}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
                     >
-                      {({ loading }) => (
-                        <button className="w-full bg-green-600 text-white px-4 py-2 rounded">
-                          {loading ? "Generating PDF..." : "Download Invoice"}
-                        </button>
-                      )}
-                    </PDFDownloadLink>
+                      Generate Invoice
+                    </button>
                   </div>
                 ))
               ) : (
@@ -1988,14 +1971,228 @@ const CabSearch = () => {
           </>
         )}
       </div>
+      
+      {/* Modal for displaying details */}
+      {activeModal && selectedDetail && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
+            <h3 className="text-xl font-semibold mb-4 capitalize">{activeModal} Details</h3>
+            <div className="space-y-3">
+              {activeModal === "fuel" && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-gray-400">Date</p>
+                      <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Amount</p>
+                      <p>{selectedDetail?.amount || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Liters</p>
+                      <p>{selectedDetail?.liters || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Rate</p>
+                      <p>{selectedDetail?.rate || "N/A"}</p>
+                    </div>
+                  </div>
+                  {selectedDetail?.receiptImage && (
+                    <div className="mt-4">
+                      <p className="text-gray-400 mb-2">Receipt</p>
+                      <img 
+                        src={selectedDetail.receiptImage} 
+                        alt="Fuel Receipt" 
+                        className="rounded cursor-pointer"
+                        onClick={() => {
+                          setSelectedImage(selectedDetail.receiptImage);
+                          setImageModalOpen(true);
+                        }} 
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+
+              {activeModal === "fastTag" && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-gray-400">Date</p>
+                      <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Amount</p>
+                      <p>{selectedDetail?.amount || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Location</p>
+                      <p>{selectedDetail?.location || "N/A"}</p>
+                    </div>
+                  </div>
+                  {selectedDetail?.receiptImage && (
+                    <div className="mt-4">
+                      <p className="text-gray-400 mb-2">Receipt</p>
+                      <img 
+                        src={selectedDetail.receiptImage} 
+                        alt="FastTag Receipt" 
+                        className="rounded cursor-pointer"
+                        onClick={() => {
+                          setSelectedImage(selectedDetail.receiptImage);
+                          setImageModalOpen(true);
+                        }} 
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+
+              {activeModal === "tyrePuncture" && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-gray-400">Date</p>
+                      <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Amount</p>
+                      <p>{selectedDetail?.amount || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Location</p>
+                      <p>{selectedDetail?.location || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Description</p>
+                      <p>{selectedDetail?.description || "N/A"}</p>
+                    </div>
+                  </div>
+                  {selectedDetail?.receiptImage && (
+                    <div className="mt-4">
+                      <p className="text-gray-400 mb-2">Receipt</p>
+                      <img 
+                        src={selectedDetail.receiptImage} 
+                        alt="Tyre Receipt" 
+                        className="rounded cursor-pointer"
+                        onClick={() => {
+                          setSelectedImage(selectedDetail.receiptImage);
+                          setImageModalOpen(true);
+                        }} 
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+
+              {activeModal === "vehicleServicing" && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-gray-400">Date</p>
+                      <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Amount</p>
+                      <p>{selectedDetail?.amount || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Location</p>
+                      <p>{selectedDetail?.location || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Description</p>
+                      <p>{selectedDetail?.description || "N/A"}</p>
+                    </div>
+                  </div>
+                  {selectedDetail?.receiptImage && (
+                    <div className="mt-4">
+                      <p className="text-gray-400 mb-2">Receipt</p>
+                      <img 
+                        src={selectedDetail.receiptImage} 
+                        alt="Servicing Receipt" 
+                        className="rounded cursor-pointer"
+                        onClick={() => {
+                          setSelectedImage(selectedDetail.receiptImage);
+                          setImageModalOpen(true);
+                        }} 
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+
+              {activeModal === "otherProblems" && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-gray-400">Date</p>
+                      <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Amount</p>
+                      <p>{selectedDetail?.amount || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Location</p>
+                      <p>{selectedDetail?.location || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Description</p>
+                      <p>{selectedDetail?.description || "N/A"}</p>
+                    </div>
+                  </div>
+                  {selectedDetail?.receiptImage && (
+                    <div className="mt-4">
+                      <p className="text-gray-400 mb-2">Receipt</p>
+                      <img 
+                        src={selectedDetail.receiptImage} 
+                        alt="Receipt" 
+                        className="rounded cursor-pointer"
+                        onClick={() => {
+                          setSelectedImage(selectedDetail.receiptImage);
+                          setImageModalOpen(true);
+                        }} 
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => {
+                  setActiveModal("");
+                  setSelectedDetail(null);
+                }}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Modal */}
+      {imageModalOpen && selectedImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="relative max-w-2xl max-h-full">
+            <button
+              onClick={() => setImageModalOpen(false)}
+              className="absolute top-2 right-2 bg-gray-800 text-white rounded-full p-1"
+            >
+              X
+            </button>
+            <img src={selectedImage} alt="Receipt" className="max-w-full max-h-[80vh] rounded" />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default CabSearch;
-
-
-
 
 
 
