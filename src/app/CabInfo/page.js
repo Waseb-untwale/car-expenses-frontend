@@ -2336,210 +2336,210 @@ const CabSearch = () => {
     if (filtered.length === 0) setError("No cabs found in the selected date range")
   }
 
-  const openModal = (type, data) => {
-    if (!data) {
-      console.error(`No data found for type: ${type}`)
-      return
-    }
-    setSelectedDetail({ type, data })
-    setActiveModal("Details")
-  }
+  // const openModal = (type, data) => {
+  //   if (!data) {
+  //     console.error(`No data found for type: ${type}`)
+  //     return
+  //   }
+  //   setSelectedDetail({ type, data })
+  //   setActiveModal("Details")
+  // }
 
-  const closeModal = () => {
-    setActiveModal("")
-    setSelectedDetail(null)
-  }
+  // const closeModal = () => {
+  //   setActiveModal("")
+  //   setSelectedDetail(null)
+  // }
 
-  // Open image modal
-  const openImageModal = (imageUrl) => {
-    setSelectedImage(imageUrl)
-    setImageModalOpen(true)
-  }
+  // // Open image modal
+  // const openImageModal = (imageUrl) => {
+  //   setSelectedImage(imageUrl)
+  //   setImageModalOpen(true)
+  // }
 
-  // Close image modal
-  const closeImageModal = () => {
-    setSelectedImage("")
-    setImageModalOpen(false)
-  }
+  // // Close image modal
+  // const closeImageModal = () => {
+  //   setSelectedImage("")
+  //   setImageModalOpen(false)
+  // }
 
-  // Helper function to display images in a gallery format
-  const renderImageGallery = (images) => {
-    if (!images || !Array.isArray(images) || images.length === 0) {
-      return <p className="text-gray-400 bg-gradient-to-b bg-black/50 to-transparent backdrop-blur-md">No images available</p>
-    }
+  // // Helper function to display images in a gallery format
+  // const renderImageGallery = (images) => {
+  //   if (!images || !Array.isArray(images) || images.length === 0) {
+  //     return <p className="text-gray-400 bg-gradient-to-b bg-black/50 to-transparent backdrop-blur-md">No images available</p>
+  //   }
 
-    return (
-      <div className="flex flex-wrap gap-2 mt-2">
-        {images.map((image, index) => (
-          <div key={index} onClick={() => openImageModal(image)} className="cursor-pointer">
-            <Image
-              src={image || "/placeholder.svg"}
-              alt={`Image ${index + 1}`}
-              width={200}
-              height={400}
-              className="w-24 h-24 object-cover rounded border border-gray-600 hover:border-blue-500 transition-all"
-            />
-          </div>
-        ))}
-      </div>
-    )
-  }
+  //   return (
+  //     <div className="flex flex-wrap gap-2 mt-2">
+  //       {images.map((image, index) => (
+  //         <div key={index} onClick={() => openImageModal(image)} className="cursor-pointer">
+  //           <Image
+  //             src={image || "/placeholder.svg"}
+  //             alt={`Image ${index + 1}`}
+  //             width={200}
+  //             height={400}
+  //             className="w-24 h-24 object-cover rounded border border-gray-600 hover:border-blue-500 transition-all"
+  //           />
+  //         </div>
+  //       ))}
+  //     </div>
+  //   )
+  // }
 
-  // Helper function to calculate and display total amount
-  const renderAmountTotal = (amounts) => {
-    if (!amounts || !Array.isArray(amounts)) {
-      return null
-    }
+  // // Helper function to calculate and display total amount
+  // const renderAmountTotal = (amounts) => {
+  //   if (!amounts || !Array.isArray(amounts)) {
+  //     return null
+  //   }
 
-    // Filter out null values and calculate total
-    const validAmounts = amounts.filter((amount) => amount !== null)
-    const total = validAmounts.reduce((sum, amount) => sum + Number(amount), 0)
+  //   // Filter out null values and calculate total
+  //   const validAmounts = amounts.filter((amount) => amount !== null)
+  //   const total = validAmounts.reduce((sum, amount) => sum + Number(amount), 0)
 
-    return (
-      <div className="mt-3 pt-3 border-t border-gray-700">
-        <div className="flex justify-between items-center">
-          <span className="font-medium">Total Amount:</span>
-          <span className="text-lg font-bold text-green-400">₹{total.toLocaleString()}</span>
-        </div>
-      </div>
-    )
-  }
+  //   return (
+  //     <div className="mt-3 pt-3 border-t border-gray-700">
+  //       <div className="flex justify-between items-center">
+  //         <span className="font-medium">Total Amount:</span>
+  //         <span className="text-lg font-bold text-green-400">₹{total.toLocaleString()}</span>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
-  // Format date and time for display
-  const formatDateTime = (timestamp) => {
-    if (!timestamp) return "N/A"
+  // // Format date and time for display
+  // const formatDateTime = (timestamp) => {
+  //   if (!timestamp) return "N/A"
 
-    const date = new Date(timestamp)
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    })
-  }
+  //   const date = new Date(timestamp)
+  //   return date.toLocaleString("en-US", {
+  //     year: "numeric",
+  //     month: "short",
+  //     day: "numeric",
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //     second: "2-digit",
+  //     hour12: true,
+  //   })
+  // }
 
-  // Function to render the appropriate content based on detail type
-  const renderDetailContent = () => {
-    if (!selectedDetail || !selectedDetail.type || !selectedDetail.data) {
-      return <p>No details available</p>
-    }
+  // // Function to render the appropriate content based on detail type
+  // const renderDetailContent = () => {
+  //   if (!selectedDetail || !selectedDetail.type || !selectedDetail.data) {
+  //     return <p>No details available</p>
+  //   }
 
-    const { type, data } = selectedDetail
+  //   const { type, data } = selectedDetail
 
-    switch (type) {
-      case "fuel":
-        return (
-          <>
-            <div className="mb-4">
-              <h3 className="text-lg font-medium mb-2">Payment Details</h3>
-              <p>
-                <span className="text-gray-400">Payment Type:</span> {data.type || "N/A"}
-              </p>
+  //   switch (type) {
+  //     case "fuel":
+  //       return (
+  //         <>
+  //           <div className="mb-4">
+  //             <h3 className="text-lg font-medium mb-2">Payment Details</h3>
+  //             <p>
+  //               <span className="text-gray-400">Payment Type:</span> {data.type || "N/A"}
+  //             </p>
 
-              {data.receiptImage && Array.isArray(data.receiptImage) && data.receiptImage.length > 0 && (
-                <>
-                  <h3 className="text-lg font-medium mt-4 mb-2">Fuel Receipts</h3>
-                  {renderImageGallery(data.receiptImage)}
-                </>
-              )}
+  //             {data.receiptImage && Array.isArray(data.receiptImage) && data.receiptImage.length > 0 && (
+  //               <>
+  //                 <h3 className="text-lg font-medium mt-4 mb-2">Fuel Receipts</h3>
+  //                 {renderImageGallery(data.receiptImage)}
+  //               </>
+  //             )}
 
-              {data.transactionImage && Array.isArray(data.transactionImage) && data.transactionImage.length > 0 && (
-                <>
-                  <h3 className="text-lg font-medium mt-4 mb-2">Transaction Images</h3>
-                  {renderImageGallery(data.transactionImage)}
-                </>
-              )}
+  //             {data.transactionImage && Array.isArray(data.transactionImage) && data.transactionImage.length > 0 && (
+  //               <>
+  //                 <h3 className="text-lg font-medium mt-4 mb-2">Transaction Images</h3>
+  //                 {renderImageGallery(data.transactionImage)}
+  //               </>
+  //             )}
 
-              {data.amount && renderAmountTotal(data.amount)}
-            </div>
-          </>
-        )
+  //             {data.amount && renderAmountTotal(data.amount)}
+  //           </div>
+  //         </>
+  //       )
 
-      case "fastTag":
-        return (
-          <>
-            <div className="mb-4">
-              <p>
-                <span className="text-gray-400">Payment Mode:</span> {data.paymentMode || "N/A"}
-              </p>
-              {data.amount && renderAmountTotal(data.amount)}
-            </div>
-          </>
-        )
+  //     case "fastTag":
+  //       return (
+  //         <>
+  //           <div className="mb-4">
+  //             <p>
+  //               <span className="text-gray-400">Payment Mode:</span> {data.paymentMode || "N/A"}
+  //             </p>
+  //             {data.amount && renderAmountTotal(data.amount)}
+  //           </div>
+  //         </>
+  //       )
 
-      case "tyrePuncture":
-        return (
-          <>
-            <div className="mb-4">
-              <h3 className="text-lg font-medium mb-2">Repair Details</h3>
-              {data.image && Array.isArray(data.image) && data.image.length > 0 && renderImageGallery(data.image)}
-              {data.repairAmount && renderAmountTotal(data.repairAmount)}
-            </div>
-          </>
-        )
+  //     case "tyrePuncture":
+  //       return (
+  //         <>
+  //           <div className="mb-4">
+  //             <h3 className="text-lg font-medium mb-2">Repair Details</h3>
+  //             {data.image && Array.isArray(data.image) && data.image.length > 0 && renderImageGallery(data.image)}
+  //             {data.repairAmount && renderAmountTotal(data.repairAmount)}
+  //           </div>
+  //         </>
+  //       )
 
-      case "vehicleServicing":
-        return (
-          <>
-            <div className="mb-4">
-              <p>
-                <span className="text-gray-400">Required Service:</span> {data.requiredService ? "Yes" : "No"}
-              </p>
-              <p>
-                <span className="text-gray-400">Details:</span> {data.details || "N/A"}
-              </p>
+  //     case "vehicleServicing":
+  //       return (
+  //         <>
+  //           <div className="mb-4">
+  //             <p>
+  //               <span className="text-gray-400">Required Service:</span> {data.requiredService ? "Yes" : "No"}
+  //             </p>
+  //             <p>
+  //               <span className="text-gray-400">Details:</span> {data.details || "N/A"}
+  //             </p>
 
-              {/* Service Images */}
-              {data.image && Array.isArray(data.image) && data.image.length > 0 && (
-                <>
-                  <h3 className="text-lg font-semibold mt-4 mb-2">OdoMeter Images</h3>
-                  {renderImageGallery(data.image)}
-                </>
-              )}
+  //             {/* Service Images */}
+  //             {data.image && Array.isArray(data.image) && data.image.length > 0 && (
+  //               <>
+  //                 <h3 className="text-lg font-semibold mt-4 mb-2">OdoMeter Images</h3>
+  //                 {renderImageGallery(data.image)}
+  //               </>
+  //             )}
 
-              {/* Receipt Images */}
-              {data.receiptImage && Array.isArray(data.receiptImage) && data.receiptImage.length > 0 && (
-                <>
-                  <h3 className="text-lg font-semibold mt-4 mb-2">Vehicle Receipt Images</h3>
-                  {renderImageGallery(data.receiptImage)}
-                </>
-              )}
+  //             {/* Receipt Images */}
+  //             {data.receiptImage && Array.isArray(data.receiptImage) && data.receiptImage.length > 0 && (
+  //               <>
+  //                 <h3 className="text-lg font-semibold mt-4 mb-2">Vehicle Receipt Images</h3>
+  //                 {renderImageGallery(data.receiptImage)}
+  //               </>
+  //             )}
 
-              {/* Total Service Amount */}
-              {data.amount && Array.isArray(data.amount) && data.amount.length > 0 && (
-                <p>
-                  <span className="text-gray-400">Total Amount:</span> ₹
-                  {data.amount.reduce((acc, curr) => acc + Number(curr || 0), 0)}
-                </p>
-              )}
-            </div>
-          </>
-        )
+  //             {/* Total Service Amount */}
+  //             {data.amount && Array.isArray(data.amount) && data.amount.length > 0 && (
+  //               <p>
+  //                 <span className="text-gray-400">Total Amount:</span> ₹
+  //                 {data.amount.reduce((acc, curr) => acc + Number(curr || 0), 0)}
+  //               </p>
+  //             )}
+  //           </div>
+  //         </>
+  //       )
 
-      case "otherProblems":
-        return (
-          <>
-            <div className="mb-4">
-              <p>
-                <span className="text-gray-400">Details:</span> {data.details || "N/A"}
-              </p>
+  //     case "otherProblems":
+  //       return (
+  //         <>
+  //           <div className="mb-4">
+  //             <p>
+  //               <span className="text-gray-400">Details:</span> {data.details || "N/A"}
+  //             </p>
 
-              {data.image && Array.isArray(data.image) && data.image.length > 0 && (
-                <>
-                  <h3 className="text-lg font-medium mt-4 mb-2">Problem Images</h3>
-                  {renderImageGallery(data.image)}
-                </>
-              )}
+  //             {data.image && Array.isArray(data.image) && data.image.length > 0 && (
+  //               <>
+  //                 <h3 className="text-lg font-medium mt-4 mb-2">Problem Images</h3>
+  //                 {renderImageGallery(data.image)}
+  //               </>
+  //             )}
 
-              {data.amount && renderAmountTotal(data.amount)}
-            </div>
-          </>
-        )
-      }
-    }
+  //             {data.amount && renderAmountTotal(data.amount)}
+  //           </div>
+  //         </>
+  //       )
+  //     }
+  //   }
 
   return (
     <div className="flex min-h-screen bg-gray-800">
