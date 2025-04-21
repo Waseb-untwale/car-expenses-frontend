@@ -2559,10 +2559,10 @@ const CabSearch = () => {
         <h1 className="text-xl md:text-2xl font-bold mb-4">Cab Search</h1>
 
         {/* WebSocket Connection Indicator */}
-        <div className="flex items-center gap-2 mb-4">
+        {/* <div className="flex items-center gap-2 mb-4">
           <div className={`h-3 w-3 rounded-full ${wsConnected ? "bg-green-500" : "bg-red-500"}`}></div>
           <span className="text-sm">{wsConnected ? "WebSocket Connected" : "WebSocket Disconnected"}</span>
-        </div>
+        </div> */}
 
         {/* Search and Filter Section */}
         <div className="space-y-4 mb-6">
@@ -2806,7 +2806,7 @@ const CabSearch = () => {
         )}
 
         {/* Details Modal */}
-        {activeModal && selectedDetail && (
+        {/* {activeModal && selectedDetail && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
             <div className="bg-gray-800 p-4 rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
@@ -2826,10 +2826,10 @@ const CabSearch = () => {
               </button>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Image Modal */}
-        {imageModalOpen && (
+        {/* {imageModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4">
             <div className="bg-gray-800 rounded-lg p-4 max-w-2xl w-full shadow-[0_0_25px_10px_rgba(255,255,255,0.5)]">
               <div className="flex justify-end mb-3">
@@ -2849,7 +2849,7 @@ const CabSearch = () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Map Modal */}
         {/* {showMap && selectedDriver && (
