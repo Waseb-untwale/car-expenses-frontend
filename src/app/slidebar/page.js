@@ -210,3 +210,102 @@ const Sidebar = () => {
 }
 
 export default Sidebar
+
+
+
+// "use client"
+
+// import { useState } from "react"
+// import Link from "next/link"
+// import { Car, Home, User, Settings, FileText, Menu, X, MapPin, DollarSign, BarChart } from "lucide-react"
+
+// const Sidebar = () => {
+//   const [isOpen, setIsOpen] = useState(false)
+
+//   const toggleSidebar = () => {
+//     setIsOpen(!isOpen)
+//   }
+
+//   return (
+//     <>
+//       {/* Mobile menu button */}
+//       <button
+//         onClick={toggleSidebar}
+//         className="fixed top-4 left-4 z-50 p-2 rounded-md bg-gray-800 text-white md:hidden"
+//       >
+//         {isOpen ? <X size={24} /> : <Menu size={24} />}
+//       </button>
+
+//       {/* Sidebar */}
+//       <div
+//         className={`fixed top-0 left-0 h-full w-60 bg-gray-900 text-white transition-transform duration-300 ease-in-out z-40 ${
+//           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+//         }`}
+//       >
+//         <div className="p-5 border-b border-gray-700">
+//           <h2 className="text-xl font-bold flex items-center">
+//             <Car className="mr-2" /> Cab Management
+//           </h2>
+//         </div>
+
+//         <nav className="p-4">
+//           <ul className="space-y-2">
+//             <li>
+//               <Link href="/" className="flex items-center p-2 rounded-md hover:bg-gray-800 transition-colors">
+//                 <Home className="mr-3" size={20} />
+//                 <span>Dashboard</span>
+//               </Link>
+//             </li>
+//             <li>
+//               <Link
+//                 href="/cab-search"
+//                 className="flex items-center p-2 rounded-md bg-gray-800 text-white transition-colors"
+//               >
+//                 <Car className="mr-3" size={20} />
+//                 <span>Cab Search</span>
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href="/drivers" className="flex items-center p-2 rounded-md hover:bg-gray-800 transition-colors">
+//                 <User className="mr-3" size={20} />
+//                 <span>Drivers</span>
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href="/tracking" className="flex items-center p-2 rounded-md hover:bg-gray-800 transition-colors">
+//                 <MapPin className="mr-3" size={20} />
+//                 <span>Tracking</span>
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href="/expenses" className="flex items-center p-2 rounded-md hover:bg-gray-800 transition-colors">
+//                 <DollarSign className="mr-3" size={20} />
+//                 <span>Expenses</span>
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href="/reports" className="flex items-center p-2 rounded-md hover:bg-gray-800 transition-colors">
+//                 <BarChart className="mr-3" size={20} />
+//                 <span>Reports</span>
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href="/invoices" className="flex items-center p-2 rounded-md hover:bg-gray-800 transition-colors">
+//                 <FileText className="mr-3" size={20} />
+//                 <span>Invoices</span>
+//               </Link>
+//             </li>
+//             <li>
+//               <Link href="/settings" className="flex items-center p-2 rounded-md hover:bg-gray-800 transition-colors">
+//                 <Settings className="mr-3" size={20} />
+//                 <span>Settings</span>
+//               </Link>
+//             </li>
+//           </ul>
+//         </nav>
+//       </div>
+//     </>
+//   )
+// }
+
+// export default Sidebar
