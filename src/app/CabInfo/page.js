@@ -1562,748 +1562,748 @@ const CabSearch = () => {
   const routeMarkersRef = useRef([])
 
   // Define showNotification callback first since it's used in other functions
-  const showNotification = useCallback((msg) => {
-    setNotification(msg);
-    setTimeout(() => setNotification(""), 3000);
-  }, []);
+  // const showNotification = useCallback((msg) => {
+  //   setNotification(msg);
+  //   setTimeout(() => setNotification(""), 3000);
+  // }, []);
 
-  // Define cleanupMap callback before it's used
-  const cleanupMap = useCallback(() => {
-    // Clean up Leaflet map if it exists
-    if (mapRef.current && typeof mapRef.current.remove === 'function') {
-      mapRef.current.remove();
-    }
+  // // Define cleanupMap callback before it's used
+  // const cleanupMap = useCallback(() => {
+  //   // Clean up Leaflet map if it exists
+  //   if (mapRef.current && typeof mapRef.current.remove === 'function') {
+  //     mapRef.current.remove();
+  //   }
 
-    // Reset references
-    mapRef.current = null;
-    markerRef.current = null;
+  //   // Reset references
+  //   mapRef.current = null;
+  //   markerRef.current = null;
 
-    if (routeLayerRef.current) {
-      routeLayerRef.current = null;
-    }
+  //   if (routeLayerRef.current) {
+  //     routeLayerRef.current = null;
+  //   }
 
-    // Clear route markers
-    routeMarkersRef.current = [];
-  }, []);
+  //   // Clear route markers
+  //   routeMarkersRef.current = [];
+  // }, []);
 
-  // Define initializeMap callback before it's used in useEffect
-  const initializeMap = useCallback(() => {
-    if (typeof window === "undefined" || !window.L) {
-      console.log("Leaflet not loaded yet");
-      return;
-    }
+  // // Define initializeMap callback before it's used in useEffect
+  // const initializeMap = useCallback(() => {
+  //   if (typeof window === "undefined" || !window.L) {
+  //     console.log("Leaflet not loaded yet");
+  //     return;
+  //   }
   
-    const L = window.L;
-    const mapContainer = document.getElementById("map-container");
+  //   const L = window.L;
+  //   const mapContainer = document.getElementById("map-container");
   
-    if (!mapContainer) {
-      return;
-    }
+  //   if (!mapContainer) {
+  //     return;
+  //   }
   
-    // Set explicit height to ensure the container is visible
-    mapContainer.style.height = "100%";
-    mapContainer.style.width = "100%";
+  //   // Set explicit height to ensure the container is visible
+  //   mapContainer.style.height = "100%";
+  //   mapContainer.style.width = "100%";
   
-    // Clean up any existing map
-    cleanupMap();
+  //   // Clean up any existing map
+  //   cleanupMap();
   
-    try {
-      // Get the current driver's location
-      const driverLocation = selectedDriver?.driver?.location;
+  //   try {
+  //     // Get the current driver's location
+  //     const driverLocation = selectedDriver?.driver?.location;
   
-      // Check if driver's location is available
-      if (!driverLocation) {
-        console.error("Driver location is not available.");
-        return; // Exit if no location is available
-      }
+  //     // Check if driver's location is available
+  //     if (!driverLocation) {
+  //       console.error("Driver location is not available.");
+  //       return; // Exit if no location is available
+  //     }
   
-      // Create the map using Leaflet and zoom directly to the driver's location
-      const map = L.map("map-container").setView(
-        [driverLocation.latitude, driverLocation.longitude],
-        15 // Zoom level to directly focus on the driver's location
-      );
+  //     // Create the map using Leaflet and zoom directly to the driver's location
+  //     const map = L.map("map-container").setView(
+  //       [driverLocation.latitude, driverLocation.longitude],
+  //       15 // Zoom level to directly focus on the driver's location
+  //     );
   
-      // Add OpenStreetMap tiles
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution:
-          '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
+  //     // Add OpenStreetMap tiles
+  //     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  //       attribution:
+  //         '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  //     }).addTo(map);
   
-      // Create custom marker icon for driver
-      const driverIcon = L.icon({
-        iconUrl: "https://maps.google.com/mapfiles/ms/micons/cabs.png",
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -32],
-      });
+  //     // Create custom marker icon for driver
+  //     const driverIcon = L.icon({
+  //       iconUrl: "https://maps.google.com/mapfiles/ms/micons/cabs.png",
+  //       iconSize: [32, 32],
+  //       iconAnchor: [16, 32],
+  //       popupAnchor: [0, -32],
+  //     });
   
-      // Create marker for the driver's current position
-      const marker = L.marker([driverLocation.latitude, driverLocation.longitude], {
-        icon: driverIcon,
-      }).addTo(map);
+  //     // Create marker for the driver's current position
+  //     const marker = L.marker([driverLocation.latitude, driverLocation.longitude], {
+  //       icon: driverIcon,
+  //     }).addTo(map);
   
-      // Add popup with driver and route information
-      marker
-        .bindPopup(
-          `
-          <div style="color: #333; padding: 8px; min-width: 200px;">
-            <strong style="font-size: 14px;">${selectedDriver.driver?.name || "Driver"}</strong><br>
-            <div style="margin-top: 5px;">
-              <strong>Cab:</strong> ${selectedDriver.cab?.cabNumber || "N/A"}<br>
-              <strong>Current Location:</strong> (${driverLocation.latitude.toFixed(6)}, ${driverLocation.longitude.toFixed(6)})<br>
-            </div>
-          </div>
-        `
-        )
-        .openPopup();
+  //     // Add popup with driver and route information
+  //     marker
+  //       .bindPopup(
+  //         `
+  //         <div style="color: #333; padding: 8px; min-width: 200px;">
+  //           <strong style="font-size: 14px;">${selectedDriver.driver?.name || "Driver"}</strong><br>
+  //           <div style="margin-top: 5px;">
+  //             <strong>Cab:</strong> ${selectedDriver.cab?.cabNumber || "N/A"}<br>
+  //             <strong>Current Location:</strong> (${driverLocation.latitude.toFixed(6)}, ${driverLocation.longitude.toFixed(6)})<br>
+  //           </div>
+  //         </div>
+  //       `
+  //       )
+  //       .openPopup();
   
-      // Save references for future use
-      mapRef.current = map;
-      markerRef.current = marker;
+  //     // Save references for future use
+  //     mapRef.current = map;
+  //     markerRef.current = marker;
   
-      // Force a resize to ensure the map renders correctly
-      setTimeout(() => {
-        if (mapRef.current) {
-          mapRef.current.invalidateSize();
-        }
-      }, 100);
+  //     // Force a resize to ensure the map renders correctly
+  //     setTimeout(() => {
+  //       if (mapRef.current) {
+  //         mapRef.current.invalidateSize();
+  //       }
+  //     }, 100);
   
-    } catch (error) {
-      console.error("Error initializing map:", error);
-      showNotification("Error initializing map");
-    }
-  }, [selectedDriver, cleanupMap, showNotification]);
+  //   } catch (error) {
+  //     console.error("Error initializing map:", error);
+  //     showNotification("Error initializing map");
+  //   }
+  // }, [selectedDriver, cleanupMap, showNotification]);
 
-  // Load Leaflet when component mounts
-  useEffect(() => {
-    if (typeof window !== "undefined" && !window.L) {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-      document.head.appendChild(link);
+  // // Load Leaflet when component mounts
+  // useEffect(() => {
+  //   if (typeof window !== "undefined" && !window.L) {
+  //     const link = document.createElement("link");
+  //     link.rel = "stylesheet";
+  //     link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+  //     document.head.appendChild(link);
 
-      const script = document.createElement("script");
-      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-      script.async = true;
-      script.onload = () => {
-        setMapLoaded(true);
-        console.log("Leaflet loaded successfully");
-      };
-      document.body.appendChild(script);
-    } else if (typeof window !== "undefined" && window.L) {
-      setMapLoaded(true);
-    }
-  }, []);
+  //     const script = document.createElement("script");
+  //     script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+  //     script.async = true;
+  //     script.onload = () => {
+  //       setMapLoaded(true);
+  //       console.log("Leaflet loaded successfully");
+  //     };
+  //     document.body.appendChild(script);
+  //   } else if (typeof window !== "undefined" && window.L) {
+  //     setMapLoaded(true);
+  //   }
+  // }, []);
 
-  const generateInvoiceNumber = useCallback((companyName) => {
-    const prefix = derivePrefix(companyName);        // e.g. "REP"
-    const finYear = getFinancialYear();              // e.g. "2526"
-    const randomNum = Math.floor(100000 + Math.random() * 900000); // 6-digit random number
-    return `${prefix}${finYear}-${randomNum}`;
-  }, []);
+  // const generateInvoiceNumber = useCallback((companyName) => {
+  //   const prefix = derivePrefix(companyName);        // e.g. "REP"
+  //   const finYear = getFinancialYear();              // e.g. "2526"
+  //   const randomNum = Math.floor(100000 + Math.random() * 900000); // 6-digit random number
+  //   return `${prefix}${finYear}-${randomNum}`;
+  // }, []);
 
-  const derivePrefix = (name) => {
-    if (!name) return "INV";
-    const nameParts = name.trim().split(" ");
-    return nameParts
-      .map(part => part.charAt(0).toUpperCase())
-      .join('')
-      .replace(/[^A-Z]/g, '')
-      .slice(0, 3); // e.g. "REP" from "R K Enterprise"
-  };
+  // const derivePrefix = (name) => {
+  //   if (!name) return "INV";
+  //   const nameParts = name.trim().split(" ");
+  //   return nameParts
+  //     .map(part => part.charAt(0).toUpperCase())
+  //     .join('')
+  //     .replace(/[^A-Z]/g, '')
+  //     .slice(0, 3); // e.g. "REP" from "R K Enterprise"
+  // };
 
-  const getFinancialYear = () => {
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1; // 0-based index, so +1
-    const currentYear = now.getFullYear();
+  // const getFinancialYear = () => {
+  //   const now = new Date();
+  //   const currentMonth = now.getMonth() + 1; // 0-based index, so +1
+  //   const currentYear = now.getFullYear();
 
-    const fyStart = currentMonth >= 4 ? currentYear : currentYear - 1;
-    const fyEnd = fyStart + 1;
+  //   const fyStart = currentMonth >= 4 ? currentYear : currentYear - 1;
+  //   const fyEnd = fyStart + 1;
 
-    const fyStartShort = fyStart.toString().slice(-2); // "25"
-    const fyEndShort = fyEnd.toString().slice(-2);     // "26"
+  //   const fyStartShort = fyStart.toString().slice(-2); // "25"
+  //   const fyEndShort = fyEnd.toString().slice(-2);     // "26"
 
-    return `${fyStartShort}${fyEndShort}`; // "2526"
-  };
+  //   return `${fyStartShort}${fyEndShort}`; // "2526"
+  // };
 
-  useEffect(() => {
-    const fetchAdminData = async () => {
-      try {
-        const id = localStorage.getItem("id")
-        const res = await axios.get(`https://car-expenses-backend.vercel.app/api/admin/getAllSubAdmins`)
-        const admin = res.data.subAdmins.find((el) => el._id === id)
+  // useEffect(() => {
+  //   const fetchAdminData = async () => {
+  //     try {
+  //       const id = localStorage.getItem("id")
+  //       const res = await axios.get(`https://car-expenses-backend.vercel.app/api/admin/getAllSubAdmins`)
+  //       const admin = res.data.subAdmins.find((el) => el._id === id)
 
-        if (admin) {
-          setCompanyLogo(admin.companyLogo)
-          setSignature(admin.signature)
-          setCompanyName(admin.name)
-          setCompanyInfo(admin.companyInfo)
-          setInvoiceNumber(generateInvoiceNumber(admin.name))
-        }
-      } catch (err) {
-        console.error("Failed to fetch admin data:", err)
-      }
-    }
+  //       if (admin) {
+  //         setCompanyLogo(admin.companyLogo)
+  //         setSignature(admin.signature)
+  //         setCompanyName(admin.name)
+  //         setCompanyInfo(admin.companyInfo)
+  //         setInvoiceNumber(generateInvoiceNumber(admin.name))
+  //       }
+  //     } catch (err) {
+  //       console.error("Failed to fetch admin data:", err)
+  //     }
+  //   }
 
-    fetchAdminData()
-  }, [generateInvoiceNumber])
+  //   fetchAdminData()
+  // }, [generateInvoiceNumber])
 
-  useEffect(() => {
-    const fetchAssignedCabs = async () => {
-      setLoading(true)
-      try {
-        const res = await axios.get(`https://car-expenses-backend.vercel.app/api/assigncab`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
+  // useEffect(() => {
+  //   const fetchAssignedCabs = async () => {
+  //     setLoading(true)
+  //     try {
+  //       const res = await axios.get(`https://car-expenses-backend.vercel.app/api/assigncab`, {
+  //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  //       })
 
-        console.log("we are in price Array", res.data[0].cab.fastTag.amount)
-        const data = res.data[0].cab
-        setCabData(data)
-        setCabDetails(res.data)
-        setFilteredCabs(res.data)
-        // Fetch route coordinates for all cabs
-        const routes = {}
-        const driverRoutesMap = {}
+  //       console.log("we are in price Array", res.data[0].cab.fastTag.amount)
+  //       const data = res.data[0].cab
+  //       setCabData(data)
+  //       setCabDetails(res.data)
+  //       setFilteredCabs(res.data)
+  //       // Fetch route coordinates for all cabs
+  //       const routes = {}
+  //       const driverRoutesMap = {}
 
-        for (const cab of res.data) {
-          if (cab.cab?.tripDetails?.location?.from && cab.cab?.tripDetails?.location?.to) {
-            const routeData = await fetchRouteCoordinates(
-              cab.cab.tripDetails.location.from,
-              cab.cab.tripDetails.location.to,
-            )
-            if (routeData) {
-              routes[cab.cab.cabNumber] = routeData
+  //       for (const cab of res.data) {
+  //         if (cab.cab?.tripDetails?.location?.from && cab.cab?.tripDetails?.location?.to) {
+  //           const routeData = await fetchRouteCoordinates(
+  //             cab.cab.tripDetails.location.from,
+  //             cab.cab.tripDetails.location.to,
+  //           )
+  //           if (routeData) {
+  //             routes[cab.cab.cabNumber] = routeData
 
-              // Map driver ID to their assigned route
-              if (cab.driver?.id) {
-                driverRoutesMap[cab.driver.id] = {
-                  cabNumber: cab.cab.cabNumber,
-                  route: routeData,
-                  from: cab.cab.tripDetails.location.from,
-                  to: cab.cab.tripDetails.location.to,
-                  totalDistance: cab.cab.tripDetails.location.totalDistance || "0",
-                }
-              }
-            }
-          }
-        }
+  //             // Map driver ID to their assigned route
+  //             if (cab.driver?.id) {
+  //               driverRoutesMap[cab.driver.id] = {
+  //                 cabNumber: cab.cab.cabNumber,
+  //                 route: routeData,
+  //                 from: cab.cab.tripDetails.location.from,
+  //                 to: cab.cab.tripDetails.location.to,
+  //                 totalDistance: cab.cab.tripDetails.location.totalDistance || "0",
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
 
-        setRouteCoordinates(routes)
-        setDriverRoutes(driverRoutesMap)
-      } catch (err) {
-        setError("Failed to fetch assigned cabs")
-        setCabDetails([])
-        setFilteredCabs([])
-      } finally {
-        setLoading(false)
-      }
-    }
+  //       setRouteCoordinates(routes)
+  //       setDriverRoutes(driverRoutesMap)
+  //     } catch (err) {
+  //       setError("Failed to fetch assigned cabs")
+  //       setCabDetails([])
+  //       setFilteredCabs([])
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
 
-    fetchAssignedCabs()
-  }, [])
+  //   fetchAssignedCabs()
+  // }, [])
 
-  // Fetch route coordinates using OpenStreetMap Nominatim API
-  const fetchRouteCoordinates = async (from, to) => {
-    try {
-      // Fetch coordinates for origin
-      const fromRes = await axios.get(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          from
-        )},India&format=json&limit=1`
-      );
+  // // Fetch route coordinates using OpenStreetMap Nominatim API
+  // const fetchRouteCoordinates = async (from, to) => {
+  //   try {
+  //     // Fetch coordinates for origin
+  //     const fromRes = await axios.get(
+  //       `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+  //         from
+  //       )},India&format=json&limit=1`
+  //     );
 
-      // Fetch coordinates for destination
-      const toRes = await axios.get(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          to
-        )},India&format=json&limit=1`
-      );
+  //     // Fetch coordinates for destination
+  //     const toRes = await axios.get(
+  //       `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+  //         to
+  //       )},India&format=json&limit=1`
+  //     );
 
-      if (fromRes.data.length > 0 && toRes.data.length > 0) {
-        return {
-          from: {
-            lat: Number.parseFloat(fromRes.data[0].lat),
-            lng: Number.parseFloat(fromRes.data[0].lon),
-            name: from,
-          },
-          to: {
-            lat: Number.parseFloat(toRes.data[0].lat),
-            lng: Number.parseFloat(toRes.data[0].lon),
-            name: to,
-          },
-        };
-      }
-      return null;
-    } catch (error) {
-      console.error("Error fetching route coordinates:", error);
-      return null;
-    }
-  };
+  //     if (fromRes.data.length > 0 && toRes.data.length > 0) {
+  //       return {
+  //         from: {
+  //           lat: Number.parseFloat(fromRes.data[0].lat),
+  //           lng: Number.parseFloat(fromRes.data[0].lon),
+  //           name: from,
+  //         },
+  //         to: {
+  //           lat: Number.parseFloat(toRes.data[0].lat),
+  //           lng: Number.parseFloat(toRes.data[0].lon),
+  //           name: to,
+  //         },
+  //       };
+  //     }
+  //     return null;
+  //   } catch (error) {
+  //     console.error("Error fetching route coordinates:", error);
+  //     return null;
+  //   }
+  // };
 
-  // Calculate distance between two points in kilometers
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Radius of the earth in km
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(lat1)) *
-      Math.cos(deg2rad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // Distance in km
-    return distance;
-  };
+  // // Calculate distance between two points in kilometers
+  // const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  //   const R = 6371; // Radius of the earth in km
+  //   const dLat = deg2rad(lat2 - lat1);
+  //   const dLon = deg2rad(lon2 - lon1);
+  //   const a =
+  //     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+  //     Math.cos(deg2rad(lat1)) *
+  //     Math.cos(deg2rad(lat2)) *
+  //     Math.sin(dLon / 2) *
+  //     Math.sin(dLon / 2);
+  //   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  //   const distance = R * c; // Distance in km
+  //   return distance;
+  // };
 
-  const deg2rad = (deg) => {
-    return deg * (Math.PI / 180);
-  };
+  // const deg2rad = (deg) => {
+  //   return deg * (Math.PI / 180);
+  // };
 
-  useEffect(() => {
-    // Connect to WebSocket server
-    const connectWebSocket = () => {
-      if (wsRef.current) {
-        console.log("WebSocket connection already exists");
-        return;
-      }
+  // useEffect(() => {
+  //   // Connect to WebSocket server
+  //   const connectWebSocket = () => {
+  //     if (wsRef.current) {
+  //       console.log("WebSocket connection already exists");
+  //       return;
+  //     }
 
-      try {
-        const wsUrl = "ws://localhost:5000"; // Update with your WebSocket server URL
-        console.log("Connecting to WebSocket server at:", wsUrl);
-        wsRef.current = new WebSocket(wsUrl);
+  //     try {
+  //       const wsUrl = "ws://localhost:5000"; // Update with your WebSocket server URL
+  //       console.log("Connecting to WebSocket server at:", wsUrl);
+  //       wsRef.current = new WebSocket(wsUrl);
 
-        wsRef.current.onopen = () => {
-          console.log("WebSocket connection established");
-          setWsConnected(true);
+  //       wsRef.current.onopen = () => {
+  //         console.log("WebSocket connection established");
+  //         setWsConnected(true);
 
-          // Register as admin
-          wsRef.current.send(
-            JSON.stringify({
-              type: "register",
-              role: "admin",
-              driverId: adminId.current,
-            })
-          );
-        };
+  //         // Register as admin
+  //         wsRef.current.send(
+  //           JSON.stringify({
+  //             type: "register",
+  //             role: "admin",
+  //             driverId: adminId.current,
+  //           })
+  //         );
+  //       };
 
-        wsRef.current.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            console.log("WebSocket message received:", data);
+  //       wsRef.current.onmessage = (event) => {
+  //         try {
+  //           const data = JSON.parse(event.data);
+  //           console.log("WebSocket message received:", data);
 
-            if (data.type === "location") {
-              console.log("helloo");
+  //           if (data.type === "location") {
+  //             console.log("helloo");
 
-              setSelectedDriver((prev) => {
-                if (!prev) return prev;
-                return {
-                  ...prev,
-                  driver: {
-                    ...prev.driver,
-                    location: {
-                      latitude: data.location.latitude,
-                      longitude: data.location.longitude,
-                      timestamp: data.location.timestamp || new Date().toISOString(),
-                    },
-                  },
-                };
-              });
-            }
-          } catch (error) {
-            console.error("Error parsing WebSocket message:", error);
-          }
-        };
+  //             setSelectedDriver((prev) => {
+  //               if (!prev) return prev;
+  //               return {
+  //                 ...prev,
+  //                 driver: {
+  //                   ...prev.driver,
+  //                   location: {
+  //                     latitude: data.location.latitude,
+  //                     longitude: data.location.longitude,
+  //                     timestamp: data.location.timestamp || new Date().toISOString(),
+  //                   },
+  //                 },
+  //               };
+  //             });
+  //           }
+  //         } catch (error) {
+  //           console.error("Error parsing WebSocket message:", error);
+  //         }
+  //       };
 
-        wsRef.current.onclose = () => {
-          console.log("WebSocket connection closed");
-          setWsConnected(false);
-          wsRef.current = null;
+  //       wsRef.current.onclose = () => {
+  //         console.log("WebSocket connection closed");
+  //         setWsConnected(false);
+  //         wsRef.current = null;
 
-          // Try to reconnect after a delay
-          setTimeout(() => {
-            connectWebSocket();
-          }, 5000);
-        };
+  //         // Try to reconnect after a delay
+  //         setTimeout(() => {
+  //           connectWebSocket();
+  //         }, 5000);
+  //       };
 
-        wsRef.current.onerror = (error) => {
-          console.error("WebSocket error:", error);
-          setWsConnected(false);
-        };
-      } catch (error) {
-        console.error("Error connecting to WebSocket:", error);
-        setWsConnected(false);
-      }
-    };
+  //       wsRef.current.onerror = (error) => {
+  //         console.error("WebSocket error:", error);
+  //         setWsConnected(false);
+  //       };
+  //     } catch (error) {
+  //       console.error("Error connecting to WebSocket:", error);
+  //       setWsConnected(false);
+  //     }
+  //   };
 
-    connectWebSocket();
+  //   connectWebSocket();
 
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-        wsRef.current = null;
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (wsRef.current) {
+  //       wsRef.current.close();
+  //       wsRef.current = null;
+  //     }
+  //   };
+  // }, []);
 
-  // Initialize map when showing it and Leaflet is loaded
-  useEffect(() => {
-    if (showMap && selectedDriver && mapLoaded) {
-      initializeMap();
-    }
-  }, [showMap, selectedDriver, mapLoaded, initializeMap]);
+  // // Initialize map when showing it and Leaflet is loaded
+  // useEffect(() => {
+  //   if (showMap && selectedDriver && mapLoaded) {
+  //     initializeMap();
+  //   }
+  // }, [showMap, selectedDriver, mapLoaded, initializeMap]);
 
-  // Calculate position along the route based on progress
-  const calculatePositionAlongRoute = (from, to, progress) => {
-    const latitude = from.lat + (to.lat - from.lat) * progress;
-    const longitude = from.lng + (to.lng - from.lng) * progress;
+  // // Calculate position along the route based on progress
+  // const calculatePositionAlongRoute = (from, to, progress) => {
+  //   const latitude = from.lat + (to.lat - from.lat) * progress;
+  //   const longitude = from.lng + (to.lng - from.lng) * progress;
 
-    console.log("Latitude:", latitude);
-    console.log("Longitude:", longitude);
+  //   console.log("Latitude:", latitude);
+  //   console.log("Longitude:", longitude);
     
-    return {
-      latitude,
-      longitude,
-      timestamp: new Date().toISOString(),
-    };
-  };
+  //   return {
+  //     latitude,
+  //     longitude,
+  //     timestamp: new Date().toISOString(),
+  //   };
+  // };
 
-  // Add this function to handle map ready event
-  const handleMapReady = (map) => {
-    console.log("🗺️ Google Map is ready");
-    mapRef.current = map;
+  // // Add this function to handle map ready event
+  // const handleMapReady = (map) => {
+  //   console.log("🗺️ Google Map is ready");
+  //   mapRef.current = map;
 
-    // Start location tracking for the selected driver
-    if (selectedDriver && selectedDriver.driver) {
-      startLocationTracking(selectedDriver);
-    }
-  };
+  //   // Start location tracking for the selected driver
+  //   if (selectedDriver && selectedDriver.driver) {
+  //     startLocationTracking(selectedDriver);
+  //   }
+  // };
 
-  // Update distance calculations based on current location
-  const updateDistanceCalculations = (driverId, location) => {
-    const driverRoute = driverRoutes[driverId];
-    if (!driverRoute || !driverRoute.route) return;
+  // // Update distance calculations based on current location
+  // const updateDistanceCalculations = (driverId, location) => {
+  //   const driverRoute = driverRoutes[driverId];
+  //   if (!driverRoute || !driverRoute.route) return;
 
-    const route = driverRoute.route;
+  //   const route = driverRoute.route;
 
-    // Calculate distance traveled from origin
-    const distanceFromOrigin = calculateDistance(
-      route.from.lat,
-      route.from.lng,
-      location.latitude,
-      location.longitude
-    );
+  //   // Calculate distance traveled from origin
+  //   const distanceFromOrigin = calculateDistance(
+  //     route.from.lat,
+  //     route.from.lng,
+  //     location.latitude,
+  //     location.longitude
+  //   );
 
-    // Calculate remaining distance to destination
-    const distanceToDestination = calculateDistance(
-      location.latitude,
-      location.longitude,
-      route.to.lat,
-      route.to.lng
-    );
+  //   // Calculate remaining distance to destination
+  //   const distanceToDestination = calculateDistance(
+  //     location.latitude,
+  //     location.longitude,
+  //     route.to.lat,
+  //     route.to.lng
+  //   );
 
-    // Calculate total route distance
-    const totalRouteDistance = calculateDistance(
-      route.from.lat,
-      route.from.lng,
-      route.to.lat,
-      route.to.lng
-    );
+  //   // Calculate total route distance
+  //   const totalRouteDistance = calculateDistance(
+  //     route.from.lat,
+  //     route.from.lng,
+  //     route.to.lat,
+  //     route.to.lng
+  //   );
 
-    // Update state with the calculated distances
-    setCurrentDistance(distanceFromOrigin.toFixed(2));
-    setRemainingDistance(distanceToDestination.toFixed(2));
+  //   // Update state with the calculated distances
+  //   setCurrentDistance(distanceFromOrigin.toFixed(2));
+  //   setRemainingDistance(distanceToDestination.toFixed(2));
 
-    console.log("From:", route.from.lat, route.from.lng);
-    console.log("Current Location:", location.latitude, location.longitude);
-    console.log("To:", route.to.lat, route.to.lng);
+  //   console.log("From:", route.from.lat, route.from.lng);
+  //   console.log("Current Location:", location.latitude, location.longitude);
+  //   console.log("To:", route.to.lat, route.to.lng);
 
-    // Update the driver's route with the new distance information
-    setDriverRoutes((prev) => ({
-      ...prev,
-      [driverId]: {
-        ...prev[driverId],
-        currentDistance: distanceFromOrigin.toFixed(2),
-        remainingDistance: distanceToDestination.toFixed(2),
-        totalRouteDistance: totalRouteDistance.toFixed(2),
-      },
-    }));
-  };
+  //   // Update the driver's route with the new distance information
+  //   setDriverRoutes((prev) => ({
+  //     ...prev,
+  //     [driverId]: {
+  //       ...prev[driverId],
+  //       currentDistance: distanceFromOrigin.toFixed(2),
+  //       remainingDistance: distanceToDestination.toFixed(2),
+  //       totalRouteDistance: totalRouteDistance.toFixed(2),
+  //     },
+  //   }));
+  // };
 
-  // Generate driver location based on assigned route
-  const getDriverLocation = (cab, driverId) => {
-    // Get the driver's assigned route
-    const driverRoute = driverRoutes[driverId];
-    const cabNumber = cab?.cabNumber;
+  // // Generate driver location based on assigned route
+  // const getDriverLocation = (cab, driverId) => {
+  //   // Get the driver's assigned route
+  //   const driverRoute = driverRoutes[driverId];
+  //   const cabNumber = cab?.cabNumber;
 
-    // First check if we have a specific route for this driver
-    const route = driverRoute ? driverRoute.route : routeCoordinates[cabNumber];
+  //   // First check if we have a specific route for this driver
+  //   const route = driverRoute ? driverRoute.route : routeCoordinates[cabNumber];
 
-    // If we don't have route data, return a default location
-    if (!route) {
-      return {
-        latitude: 28.6139, // Default to Delhi
-        longitude: 77.209,
-        timestamp: new Date().toISOString(),
-      };
-    }
+  //   // If we don't have route data, return a default location
+  //   if (!route) {
+  //     return {
+  //       latitude: 28.6139, // Default to Delhi
+  //       longitude: 77.209,
+  //       timestamp: new Date().toISOString(),
+  //     };
+  //   }
 
-    // If we already have a stored location for this driver, use it with some movement
-    if (driverLocations[driverId]) {
-      const currentLoc = driverLocations[driverId];
-      const fromCoords = route.from;
-      const toCoords = route.to;
+  //   // If we already have a stored location for this driver, use it with some movement
+  //   if (driverLocations[driverId]) {
+  //     const currentLoc = driverLocations[driverId];
+  //     const fromCoords = route.from;
+  //     const toCoords = route.to;
 
-      // Find how far along the route we are (0 to 1)
-      const totalDistance = Math.sqrt(
-        Math.pow(toCoords.lat - fromCoords.lat, 2) +
-        Math.pow(toCoords.lng - fromCoords.lng, 2)
-      );
+  //     // Find how far along the route we are (0 to 1)
+  //     const totalDistance = Math.sqrt(
+  //       Math.pow(toCoords.lat - fromCoords.lat, 2) +
+  //       Math.pow(toCoords.lng - fromCoords.lng, 2)
+  //     );
 
-      const currentDistance = Math.sqrt(
-        Math.pow(currentLoc.latitude - fromCoords.lat, 2) +
-        Math.pow(currentLoc.longitude - fromCoords.lng, 2)
-      );
+  //     const currentDistance = Math.sqrt(
+  //       Math.pow(currentLoc.latitude - fromCoords.lat, 2) +
+  //       Math.pow(currentLoc.longitude - fromCoords.lng, 2)
+  //     );
 
-      let progress = currentDistance / totalDistance;
+  //     let progress = currentDistance / totalDistance;
 
-      // Add some small movement along the route (0.5% to 2% progress)
-      progress += Math.random() * 0.015 + 0.005;
+  //     // Add some small movement along the route (0.5% to 2% progress)
+  //     progress += Math.random() * 0.015 + 0.005;
 
-      // If we've gone past the destination, reset to start
-      if (progress >= 1) {
-        progress = 0;
-      }
+  //     // If we've gone past the destination, reset to start
+  //     if (progress >= 1) {
+  //       progress = 0;
+  //     }
 
-      // Calculate new position
-      const newLocation = calculatePositionAlongRoute(
-        fromCoords,
-        toCoords,
-        progress
-      );
+  //     // Calculate new position
+  //     const newLocation = calculatePositionAlongRoute(
+  //       fromCoords,
+  //       toCoords,
+  //       progress
+  //     );
 
-      // Update distance calculations for this new location
-      updateDistanceCalculations(driverId, newLocation);
+  //     // Update distance calculations for this new location
+  //     updateDistanceCalculations(driverId, newLocation);
 
-      return newLocation;
-    }
+  //     return newLocation;
+  //   }
 
-    // If no stored location, start at the origin with a small random offset
-    const initialLocation = {
-      latitude: route.from.lat + (Math.random() * 0.01 - 0.005),
-      longitude: route.from.lng + (Math.random() * 0.01 - 0.005),
-      timestamp: new Date().toISOString(),
-    };
+  //   // If no stored location, start at the origin with a small random offset
+  //   const initialLocation = {
+  //     latitude: route.from.lat + (Math.random() * 0.01 - 0.005),
+  //     longitude: route.from.lng + (Math.random() * 0.01 - 0.005),
+  //     timestamp: new Date().toISOString(),
+  //   };
 
-    // Initialize distance calculations
-    updateDistanceCalculations(driverId, initialLocation);
+  //   // Initialize distance calculations
+  //   updateDistanceCalculations(driverId, initialLocation);
 
-    return initialLocation;
-  };
+  //   return initialLocation;
+  // };
 
-  // Add waypoints along the route to make it more detailed
-  const addWaypointsAlongRoute = (route, map, L) => {
-    if (!route || !map || !L) return;
+  // // Add waypoints along the route to make it more detailed
+  // const addWaypointsAlongRoute = (route, map, L) => {
+  //   if (!route || !map || !L) return;
 
-    const fromPoint = [route.from.lat, route.from.lng];
-    const toPoint = [route.to.lat, route.to.lng];
+  //   const fromPoint = [route.from.lat, route.from.lng];
+  //   const toPoint = [route.to.lat, route.to.lng];
 
-    // Calculate distance between points
-    const distance = Math.sqrt(
-      Math.pow(toPoint[0] - fromPoint[0], 2) +
-      Math.pow(toPoint[1] - fromPoint[1], 2)
-    );
+  //   // Calculate distance between points
+  //   const distance = Math.sqrt(
+  //     Math.pow(toPoint[0] - fromPoint[0], 2) +
+  //     Math.pow(toPoint[1] - fromPoint[1], 2)
+  //   );
 
-    // Determine number of waypoints based on distance
-    const numWaypoints = Math.min(Math.ceil(distance * 100), 10); // Max 10 waypoints
+  //   // Determine number of waypoints based on distance
+  //   const numWaypoints = Math.min(Math.ceil(distance * 100), 10); // Max 10 waypoints
 
-    if (numWaypoints <= 1) return; // No need for waypoints if distance is small
+  //   if (numWaypoints <= 1) return; // No need for waypoints if distance is small
 
-    // Create waypoints
-    for (let i = 1; i < numWaypoints; i++) {
-      const progress = i / numWaypoints;
-      const waypointLat = fromPoint[0] + (toPoint[0] - fromPoint[0]) * progress;
-      const waypointLng = fromPoint[1] + (toPoint[1] - fromPoint[1]) * progress;
+  //   // Create waypoints
+  //   for (let i = 1; i < numWaypoints; i++) {
+  //     const progress = i / numWaypoints;
+  //     const waypointLat = fromPoint[0] + (toPoint[0] - fromPoint[0]) * progress;
+  //     const waypointLng = fromPoint[1] + (toPoint[1] - fromPoint[1]) * progress;
 
-      // Create a small marker for the waypoint with better styling
-      const waypointIcon = L.divIcon({
-        className: "waypoint-marker",
-        html: `<div style="background-color: #FBBC05; width: 8px; height: 8px; border-radius: 50%; border: 1px solid white; box-shadow: 0 0 3px rgba(0,0,0,0.2);"></div>`,
-        iconSize: [8, 8],
-        iconAnchor: [4, 4],
-      });
+  //     // Create a small marker for the waypoint with better styling
+  //     const waypointIcon = L.divIcon({
+  //       className: "waypoint-marker",
+  //       html: `<div style="background-color: #FBBC05; width: 8px; height: 8px; border-radius: 50%; border: 1px solid white; box-shadow: 0 0 3px rgba(0,0,0,0.2);"></div>`,
+  //       iconSize: [8, 8],
+  //       iconAnchor: [4, 4],
+  //     });
 
-      const waypointMarker = L.marker([waypointLat, waypointLng], {
-        icon: waypointIcon,
-      }).addTo(map);
+  //     const waypointMarker = L.marker([waypointLat, waypointLng], {
+  //       icon: waypointIcon,
+  //     }).addTo(map);
 
-      // Add tooltip with distance information
-      const distanceFromStart = calculateDistance(
-        route.from.lat, route.from.lng,
-        waypointLat, waypointLng
-      ).toFixed(1);
+  //     // Add tooltip with distance information
+  //     const distanceFromStart = calculateDistance(
+  //       route.from.lat, route.from.lng,
+  //       waypointLat, waypointLng
+  //     ).toFixed(1);
 
-      waypointMarker.bindTooltip(`${distanceFromStart} KM`,
-        { direction: 'top', opacity: 0.7 });
+  //     waypointMarker.bindTooltip(`${distanceFromStart} KM`,
+  //       { direction: 'top', opacity: 0.7 });
 
-      // Store waypoint markers for cleanup
-      routeMarkersRef.current.push(waypointMarker);
-    }
-  };
+  //     // Store waypoint markers for cleanup
+  //     routeMarkersRef.current.push(waypointMarker);
+  //   }
+  // };
 
-  // Update map marker position
-  const updateMapMarker = (location) => {
-    if (!markerRef.current || !mapRef.current) return;
+  // // Update map marker position
+  // const updateMapMarker = (location) => {
+  //   if (!markerRef.current || !mapRef.current) return;
 
-    const newPosition = [location.latitude, location.longitude];
-    markerRef.current.setLatLng(newPosition);
-    mapRef.current.panTo(newPosition); // Pan to the new driver location
-    mapRef.current.setZoom(15); // Set zoom level to 15 for better visibility
-  };
+  //   const newPosition = [location.latitude, location.longitude];
+  //   markerRef.current.setLatLng(newPosition);
+  //   mapRef.current.panTo(newPosition); // Pan to the new driver location
+  //   mapRef.current.setZoom(15); // Set zoom level to 15 for better visibility
+  // };
 
-  const handleLocationClick = (item) => {
-    // Make sure we have a valid driver
-    if (!item.driver) {
-      showNotification("⚠️ No driver information available");
-      return;
-    }
+  // const handleLocationClick = (item) => {
+  //   // Make sure we have a valid driver
+  //   if (!item.driver) {
+  //     showNotification("⚠️ No driver information available");
+  //     return;
+  //   }
 
-    // Get the latest location from WebSocket if available
-    const latestLocation = driverLocations[item.driver.id] || item.driver.location;
+  //   // Get the latest location from WebSocket if available
+  //   const latestLocation = driverLocations[item.driver.id] || item.driver.location;
 
-    // Set the selected driver with all necessary information
-    setSelectedDriver({
-      driver: {
-        ...item.driver,
-        // Use the latest location from WebSocket or fallback to the provided location
-        location: latestLocation ? {
-          latitude: parseFloat(latestLocation.latitude || 16.7050),
-          longitude: parseFloat(latestLocation.longitude || 74.2433),
-          timestamp: latestLocation.timestamp || new Date().toISOString()
-        } : {
-          latitude: 16.7050,
-          longitude: 74.2433,
-          timestamp: new Date().toISOString()
-        }
-      },
-      cab: {
-        ...item.cab,
-        // Ensure route information is properly formatted
-        location: {
-          from: item.cab?.location?.from || "Pune",
-          to: item.cab?.location?.to || "Pune",
-          totalDistance: item.cab?.location?.totalDistance ||
-            calculateRouteDistance(item.cab?.location?.from, item.cab?.location?.to)
-        }
-      }
-    });
+  //   // Set the selected driver with all necessary information
+  //   setSelectedDriver({
+  //     driver: {
+  //       ...item.driver,
+  //       // Use the latest location from WebSocket or fallback to the provided location
+  //       location: latestLocation ? {
+  //         latitude: parseFloat(latestLocation.latitude || 16.7050),
+  //         longitude: parseFloat(latestLocation.longitude || 74.2433),
+  //         timestamp: latestLocation.timestamp || new Date().toISOString()
+  //       } : {
+  //         latitude: 16.7050,
+  //         longitude: 74.2433,
+  //         timestamp: new Date().toISOString()
+  //       }
+  //     },
+  //     cab: {
+  //       ...item.cab,
+  //       // Ensure route information is properly formatted
+  //       location: {
+  //         from: item.cab?.location?.from || "Pune",
+  //         to: item.cab?.location?.to || "Pune",
+  //         totalDistance: item.cab?.location?.totalDistance ||
+  //           calculateRouteDistance(item.cab?.location?.from, item.cab?.location?.to)
+  //       }
+  //     }
+  //   });
 
-    // Show the map modal
-    setShowMap(true);
-  };
+  //   // Show the map modal
+  //   setShowMap(true);
+  // };
 
-  const calculateRouteDistance = (from, to) => {
-    // Define some common routes and their distances
-    const commonRoutes = {
-      "Pune-Mumbai": 375,
-      "Mumbai-Kolhapur": 375,
-      "Kolhapur-Pune": 230,
-      "Pune-Kolhapur": 230,
-      "Mumbai-Pune": 150,
-      "Pune-Mumbai": 150,
-      "Mumbai-Delhi": 1400,
-      "Delhi-Mumbai": 1400,
-      "Kolhapur-Bangalore": 500,
-      "Bangalore-Kolhapur": 500
-    };
+  // const calculateRouteDistance = (from, to) => {
+  //   // Define some common routes and their distances
+  //   const commonRoutes = {
+  //     "Pune-Mumbai": 375,
+  //     "Mumbai-Kolhapur": 375,
+  //     "Kolhapur-Pune": 230,
+  //     "Pune-Kolhapur": 230,
+  //     "Mumbai-Pune": 150,
+  //     "Pune-Mumbai": 150,
+  //     "Mumbai-Delhi": 1400,
+  //     "Delhi-Mumbai": 1400,
+  //     "Kolhapur-Bangalore": 500,
+  //     "Bangalore-Kolhapur": 500
+  //   };
 
-    if (!from || !to) return "0";
+  //   if (!from || !to) return "0";
 
-    const routeKey = `${from}-${to}`;
-    if (commonRoutes[routeKey]) {
-      return commonRoutes[routeKey].toString();
-    }
+  //   const routeKey = `${from}-${to}`;
+  //   if (commonRoutes[routeKey]) {
+  //     return commonRoutes[routeKey].toString();
+  //   }
 
-    // Default distance if route not found
-    return "300";
-  };
+  //   // Default distance if route not found
+  //   return "300";
+  // };
 
-  const startLocationTracking = (driver) => {
-    // Clear any existing interval
-    if (locationIntervalRef.current) {
-      clearInterval(locationIntervalRef.current);
-    }
+  // const startLocationTracking = (driver) => {
+  //   // Clear any existing interval
+  //   if (locationIntervalRef.current) {
+  //     clearInterval(locationIntervalRef.current);
+  //   }
 
-    // Immediately fetch the first location
-    fetchDriverLocation(driver);
+  //   // Immediately fetch the first location
+  //   fetchDriverLocation(driver);
 
-    // Then set up regular updates every 5 seconds
-    locationIntervalRef.current = setInterval(() => {
-      fetchDriverLocation(driver);
-    }, 5000);
-  };
+  //   // Then set up regular updates every 5 seconds
+  //   locationIntervalRef.current = setInterval(() => {
+  //     fetchDriverLocation(driver);
+  //   }, 5000);
+  // };
 
-  const fetchDriverLocation = async (driver) => {
-    try {
-      if (!driver.driver?.id) {
-        showNotification("Driver ID not found");
-        return;
-      }
+  // const fetchDriverLocation = async (driver) => {
+  //   try {
+  //     if (!driver.driver?.id) {
+  //       showNotification("Driver ID not found");
+  //       return;
+  //     }
 
-      showNotification(`Fetching location for ${driver.driver?.name}...`);
+  //     showNotification(`Fetching location for ${driver.driver?.name}...`);
 
-      // Get location based on the assigned route
-      const location = getDriverLocation(driver.cab, driver.driver.id);
+  //     // Get location based on the assigned route
+  //     const location = getDriverLocation(driver.cab, driver.driver.id);
 
-      // Store the location
-      driverLocations[driver.driver.id] = location;
+  //     // Store the location
+  //     driverLocations[driver.driver.id] = location;
 
-      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-        const locationMessage = {
-          type: "location",
-          driverId: driver.driver?.id,
-          role: "driver",
-          location: location,
-        };
+  //     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+  //       const locationMessage = {
+  //         type: "location",
+  //         driverId: driver.driver?.id,
+  //         role: "driver",
+  //         location: location,
+  //       };
 
-        wsRef.current.send(JSON.stringify(locationMessage));
+  //       wsRef.current.send(JSON.stringify(locationMessage));
 
-        // Also update the selected driver if this is the one being viewed
-        if (selectedDriver && selectedDriver.driver?.id === driver.driver?.id) {
-          setSelectedDriver((prev) => {
-            if (!prev) return prev;
-            return {
-              ...prev,
-              driver: {
-                ...prev.driver,
-                location: location,
-              },
-            };
-          });
+  //       // Also update the selected driver if this is the one being viewed
+  //       if (selectedDriver && selectedDriver.driver?.id === driver.driver?.id) {
+  //         setSelectedDriver((prev) => {
+  //           if (!prev) return prev;
+  //           return {
+  //             ...prev,
+  //             driver: {
+  //               ...prev.driver,
+  //               location: location,
+  //             },
+  //           };
+  //         });
 
-          // Update map marker if using Leaflet directly
-          if (markerRef.current && mapRef.current) {
-            updateMapMarker(location); // Automatically zooms in on the new location
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching driver location:", error);
-      showNotification("Error fetching driver location");
-    }
-  };
+  //         // Update map marker if using Leaflet directly
+  //         if (markerRef.current && mapRef.current) {
+  //           updateMapMarker(location); // Automatically zooms in on the new location
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching driver location:", error);
+  //     showNotification("Error fetching driver location");
+  //   }
+  // };
 
-  const closeMap = () => {
-    // Stop location tracking when map is closed
-    if (locationIntervalRef.current) {
-      clearInterval(locationIntervalRef.current);
-      locationIntervalRef.current = null;
-    }
+  // const closeMap = () => {
+  //   // Stop location tracking when map is closed
+  //   if (locationIntervalRef.current) {
+  //     clearInterval(locationIntervalRef.current);
+  //     locationIntervalRef.current = null;
+  //   }
 
-    // No need to clean up Leaflet map as we're using React component
-    setShowMap(false);
-    setSelectedDriver(null);
-  };
+  //   // No need to clean up Leaflet map as we're using React component
+  //   setShowMap(false);
+  //   setSelectedDriver(null);
+  // };
 
   const handleSearch = () => {
     setError(null)
@@ -2775,7 +2775,7 @@ const CabSearch = () => {
                         <MapPin size={16} />
                       </button>
                     </div>
-                    {/* <PDFDownloadLink
+                    <PDFDownloadLink
                       document={
                         <InvoicePDF
                           trip={item}
@@ -2795,7 +2795,7 @@ const CabSearch = () => {
                           {loading ? "Generating PDF..." : "Download Invoice"}
                         </button>
                       )}
-                    </PDFDownloadLink> */}
+                    </PDFDownloadLink>
                   </div>
                 ))
               ) : (
