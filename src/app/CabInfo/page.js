@@ -1869,7 +1869,7 @@ const CabSearch = () => {
       }
 
       try {
-        const wsUrl = "wss://car-expenses-backend.vercel.app"; // Update with your WebSocket server URL
+        const wsUrl = "ws://car-expenses-backend.vercel.app"; // Update with your WebSocket server URL
         console.log("Connecting to WebSocket server at:", wsUrl);
         wsRef.current = new WebSocket(wsUrl);
 
