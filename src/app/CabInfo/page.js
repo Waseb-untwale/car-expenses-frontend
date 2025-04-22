@@ -1470,6 +1470,736 @@
 
 
 
+//without PDFlINK -running on deployment
+
+// "use client"
+// import { useState, useEffect, useRef, useCallback } from "react";
+// import React from 'react'
+// import axios from "axios";
+// import Sidebar from "../slidebar/page";
+// import baseURL from "@/utils/api";
+// // Remove PDF imports
+// // import { PDFDownloadLink } from "@react-pdf/renderer";
+// // import InvoicePDF from "../components/InvoicePDF";
+// import { MapPin } from "lucide-react";
+
+// const driverLocations = {};
+
+// const CabSearch = () => {
+//   const [cabNumber, setCabNumber] = useState("")
+//   const [cabDetails, setCabDetails] = useState([])
+//   const [filteredCabs, setFilteredCabs] = useState([])
+//   const [loading, setLoading] = useState(false)
+//   const [error, setError] = useState(null)
+//   const [fromDate, setFromDate] = useState("")
+//   const [toDate, setToDate] = useState("")
+//   const [activeModal, setActiveModal] = useState("")
+//   const [selectedDetail, setSelectedDetail] = useState(null)
+//   const [cab, setcab] = useState("")
+//   const [companyLogo, setCompanyLogo] = useState("")
+//   const [signature, setSignature] = useState("")
+//   const [companyInfo, setCompanyInfo] = useState("")
+//   const [subCompanyName, setCompanyName] = useState("")
+//   const [invoiceNumber, setInvoiceNumber] = useState("")
+//   const [wsConnected, setWsConnected] = useState(false)
+//   const wsRef = useRef(null)
+//   const adminId = useRef(`admin-${Date.now()}`)
+//   const [showMap, setShowMap] = useState(false)
+//   const [selectedDriver, setSelectedDriver] = useState(null)
+//   const [notification, setNotification] = useState("")
+//   const [routeCoordinates, setRouteCoordinates] = useState({})
+//   const [driverRoutes, setDriverRoutes] = useState({})
+//   const [mapLoaded, setMapLoaded] = useState(false)
+//   const [currentDistance, setCurrentDistance] = useState(0)
+//   const [remainingDistance, setRemainingDistance] = useState(0)
+//   const [clickedCoordinates, setClickedCoordinates] = useState(null)
+//   const[cabData,setCabData]=useState(null)
+//   // Add state for image modal
+//   const [imageModalOpen, setImageModalOpen] = useState(false)
+//   const [selectedImage, setSelectedImage] = useState("")
+
+//   // Track location update interval
+//   const locationIntervalRef = useRef(null)
+//   // Map reference for Leaflet
+//   const mapRef = useRef(null)
+//   const markerRef = useRef(null)
+//   const routeLayerRef = useRef(null)
+//   const routeMarkersRef = useRef([])
+
+//   const generateInvoiceNumber = useCallback((companyName) => {
+//     const prefix = derivePrefix(companyName);        // e.g. "REP"
+//     const finYear = getFinancialYear();              // e.g. "2526"
+//     const randomNum = Math.floor(100000 + Math.random() * 900000); // 6-digit random number
+//     return `${prefix}${finYear}-${randomNum}`;
+//   }, []);
+
+//   const derivePrefix = (name) => {
+//     if (!name) return "INV";
+//     const nameParts = name.trim().split(" ");
+//     return nameParts
+//       .map(part => part.charAt(0).toUpperCase())
+//       .join('')
+//       .replace(/[^A-Z]/g, '')
+//       .slice(0, 3); // e.g. "REP" from "R K Enterprise"
+//   };
+
+//   const getFinancialYear = () => {
+//     const now = new Date();
+//     const currentMonth = now.getMonth() + 1; // 0-based index, so +1
+//     const currentYear = now.getFullYear();
+
+//     const fyStart = currentMonth >= 4 ? currentYear : currentYear - 1;
+//     const fyEnd = fyStart + 1;
+
+//     const fyStartShort = fyStart.toString().slice(-2); // "25"
+//     const fyEndShort = fyEnd.toString().slice(-2);     // "26"
+
+//     return `${fyStartShort}${fyEndShort}`; // "2526"
+//   };
+
+//   useEffect(() => {
+//     const fetchAdminData = async () => {
+//       try {
+//         const id = localStorage.getItem("id");
+//         const res = await axios.get(`${baseURL}api/admin/getAllSubAdmins`);
+//         console.log("response",res)
+//         const admin = res.data.subAdmins.find((el) => el._id === id);
+
+//         if (admin) {
+//           setCompanyLogo(admin.companyLogo);
+//           setSignature(admin.signature);
+//           setCompanyName(admin.name);
+//           setCompanyInfo(admin.companyInfo);
+//           setInvoiceNumber(generateInvoiceNumber(admin.name));
+//         }
+//       } catch (err) {
+//         console.error("Failed to fetch admin data:", err);
+//       }
+//     };
+
+//     fetchAdminData();
+//   }, [generateInvoiceNumber]);
+
+//   useEffect(() => {
+//     const fetchAssignedCabs = async () => {
+//       setLoading(true)
+//       try {
+//         const res = await axios.get(`${baseURL}api/assigncab`, {
+//           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+//         })
+
+//         console.log("assigned array",res)
+
+//         if (res.data && res.data.length > 0) {
+//           console.log("we are in price Array", res.data[0].cab?.fastTag?.amount)
+//           let data = res.data[0].cab
+//           setCabData(data)
+//           setCabDetails(res.data)
+//           setFilteredCabs(res.data)
+//           // Fetch route coordinates for all cabs
+//           const routes = {}
+//           const driverRoutesMap = {}
+
+//           for (const cab of res.data) {
+//             if (cab.cab?.tripDetails?.location?.from && cab.cab?.tripDetails?.location?.to) {
+//               const routeData = await fetchRouteCoordinates(cab.cab.tripDetails.location.from, cab.cab.tripDetails.location.to)
+//               if (routeData) {
+//                 routes[cab.cab.cabNumber] = routeData
+
+//                 // Map driver ID to their assigned route
+//                 if (cab.driver?.id) {
+//                   driverRoutesMap[cab.driver.id] = {
+//                     cabNumber: cab.cab.cabNumber,
+//                     route: routeData,
+//                     from: cab.cab.tripDetails.location.from,
+//                     to: cab.cab.tripDetails.location.to,
+//                     totalDistance: cab.cab.tripDetails.location.totalDistance || "0",
+//                   }
+//                 }
+//               }
+//             }
+//           }
+
+//           setRouteCoordinates(routes)
+//           setDriverRoutes(driverRoutesMap)
+//         }
+//       } catch (err) {
+//         setError("Failed to fetch assigned cabs")
+//         setCabDetails([])
+//         setFilteredCabs([])
+//       } finally {
+//         setLoading(false)
+//       }
+//     }
+
+//     fetchAssignedCabs()
+//   }, [])
+
+//   // Fetch route coordinates using OpenStreetMap Nominatim API
+//   const fetchRouteCoordinates = async (from, to) => {
+//     try {
+//       // Fetch coordinates for origin
+//       const fromRes = await axios.get(
+//         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+//           from
+//         )},India&format=json&limit=1`
+//       );
+
+//       // Fetch coordinates for destination
+//       const toRes = await axios.get(
+//         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+//           to
+//         )},India&format=json&limit=1`
+//       );
+
+//       if (fromRes.data.length > 0 && toRes.data.length > 0) {
+//         return {
+//           from: {
+//             lat: Number.parseFloat(fromRes.data[0].lat),
+//             lng: Number.parseFloat(fromRes.data[0].lon),
+//             name: from,
+//           },
+//           to: {
+//             lat: Number.parseFloat(toRes.data[0].lat),
+//             lng: Number.parseFloat(toRes.data[0].lon),
+//             name: to,
+//           },
+//         };
+//       }
+//       return null;
+//     } catch (error) {
+//       console.error("Error fetching route coordinates:", error);
+//       return null;
+//     }
+//   };
+
+//   const handleSearch = () => {
+//     setError(null)
+//     if (!cabNumber) {
+//       setError("Please enter a cab number")
+//       return
+//     }
+
+//     const filtered = cabDetails.filter((item) => item.cab?.cabNumber?.toLowerCase().includes(cabNumber.toLowerCase()))
+
+//     setFilteredCabs(filtered)
+//     if (filtered.length === 0) setError("Cab details not found")
+//   }
+
+//   // Add missing implementation for handleDateFilter
+//   const handleDateFilter = () => {
+//     if (fromDate && toDate && new Date(fromDate) > new Date(toDate)) {
+//       setError("To date must be after From date")
+//       return
+//     }
+
+//     if (!fromDate && !toDate) {
+//       setFilteredCabs(cabDetails)
+//       return
+//     }
+
+//     let filtered = [...cabDetails]
+
+//     if (fromDate) {
+//       filtered = filtered.filter((item) => {
+//         const assignedDate = new Date(item.assignedAt)
+//         return assignedDate >= new Date(fromDate)
+//       })
+//     }
+
+//     if (toDate) {
+//       filtered = filtered.filter((item) => {
+//         const assignedDate = new Date(item.assignedAt)
+//         return assignedDate <= new Date(toDate)
+//       })
+//     }
+
+//     setFilteredCabs(filtered)
+//     if (filtered.length === 0) setError("No cabs found within selected dates")
+//   }
+
+//   // Add missing implementation for openModal
+//   const openModal = (type, details) => {
+//     setActiveModal(type)
+//     setSelectedDetail(details)
+//   }
+
+//   // Add missing implementation for handleLocationClick
+//   const handleLocationClick = (item) => {
+//     setSelectedDriver(item.driver)
+//     setShowMap(true)
+//     // Show notification when driver tracking is active
+//     setNotification(`Tracking ${item.driver?.name || "driver"} in ${item.cab?.cabNumber}`)
+    
+//     // Clear notification after 3 seconds
+//     setTimeout(() => {
+//       setNotification("")
+//     }, 3000)
+//   }
+
+//   // Handle invoice generation separately
+//   const handleGenerateInvoice = (item) => {
+//     // You will implement your custom PDF generation logic here
+//     console.log("Generate invoice for:", item)
+//     setNotification(`Preparing invoice for ${item.cab?.cabNumber}...`)
+    
+//     // Clear notification after 3 seconds
+//     setTimeout(() => {
+//       setNotification("")
+//     }, 3000)
+//   }
+
+//   return (
+//     <div className="flex min-h-screen bg-gray-800">
+//       <Sidebar></Sidebar>
+//       <div className="flex-1 p-4 md:p-6 md:ml-60 mt-20 sm:mt-0 text-white transition-all duration-300">
+//         {notification && (
+//           <div className="fixed inset-0 z-50 flex items-center justify-center">
+//             <div className="bg-indigo-600 text-white px-6 py-3 rounded-md shadow-lg transition-all duration-300 animate-fadeIn">
+//               {notification}
+//             </div>
+//           </div>
+//         )}
+//         <h1 className="text-xl md:text-2xl font-bold mb-4">Cab Search</h1>
+//         <div className="space-y-4 mb-6">
+//           {/* Search by Cab Number */}
+//           <div className="flex flex-col sm:flex-row gap-2">
+//             <input
+//               type="text"
+//               placeholder="Enter Cab Number"
+//               value={cabNumber}
+//               onChange={(e) => setCabNumber(e.target.value)}
+//               className="border p-2 rounded w-full bg-gray-700 text-white"
+//             />
+//             <button
+//               onClick={handleSearch}
+//               className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded whitespace-nowrap transition-colors"
+//               disabled={loading}
+//             >
+//               {loading ? "Searching..." : "Search"}
+//             </button>
+//           </div>
+
+//           {/* Filter by Date */}
+//           <div className="flex flex-col sm:flex-row gap-2">
+//             <div className="flex-1 flex flex-col sm:flex-row gap-2">
+//               <input
+//                 type="date"
+//                 value={fromDate}
+//                 onChange={(e) => setFromDate(e.target.value)}
+//                 className="border p-2 rounded bg-gray-700 text-white w-full"
+//               />
+//               <input
+//                 type="date"
+//                 value={toDate}
+//                 onChange={(e) => setToDate(e.target.value)}
+//                 className="border p-2 rounded bg-gray-700 text-white w-full"
+//               />
+//             </div>
+//             <button
+//               onClick={handleDateFilter}
+//               className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded whitespace-nowrap transition-colors"
+//             >
+//               Filter by Date
+//             </button>
+//           </div>
+//         </div>
+
+//         {error && <p className="text-red-500 mb-4">{error}</p>}     
+        
+
+//         {loading ? (
+//           <div className="animate-pulse space-y-4">
+//             {[...Array(5)].map((_, i) => (
+//               <div key={i} className="bg-gray-700 h-16 rounded-md"></div>
+//             ))}
+//           </div>
+//         ) : (
+//           <>
+//             {/* Desktop Table View */}
+//             <div className="hidden md:block bg-gray-700 shadow-lg rounded-lg overflow-x-auto">
+//               <table className="w-full border-collapse">
+//                 <thead>
+//                   <tr className="bg-gray-800 text-white">
+//                     <th className="p-3 text-left">#</th>
+//                     <th className="p-3 text-left">Cab No</th>
+//                     <th className="p-3 text-left">Driver</th>
+//                     <th className="p-3 text-left">Assigned Date</th>
+//                     <th className="p-3 text-left">Route</th>
+//                     <th className="p-3 text-left">Status</th>
+//                     <th className="p-3 text-left">Details</th>
+//                     <th className="p-3 text-left">Location</th>
+//                     <th className="p-2">Invoice</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {filteredCabs.length > 0 ? (
+//                     filteredCabs.map((item, index) => (
+//                       <tr key={index} className="border-b border-gray-600 hover:bg-gray-600 transition-colors">
+//                         <td className="p-3">{index + 1}</td>
+//                         <td className="p-3 font-medium">{item.cab?.cabNumber || "N/A"}</td>
+//                         <td className="p-3">{item.driver?.name || "N/A"}</td>
+//                         <td className="p-3">
+//                           {item.assignedAt ? new Date(item.assignedAt).toLocaleDateString() : "N/A"}
+//                         </td>
+//                         <td className="p-3">
+//                           {item.cab?.tripDetails?.location?.from || "N/A"} → {item.cab?.tripDetails?.location?.to || "N/A"}
+//                         </td>
+//                         <td
+//                           className={`p-3 ${item?.status === "assigned"
+//                             ? "text-red-500 border-white"
+//                             : item?.status === "completed"
+//                               ? "text-green-500 border-white"
+//                               : "text-green-500 border-white"
+//                             }`}
+//                         >
+//                           {item?.status}
+//                         </td>
+//                         <td className="p-3">
+//                           <select
+//                             className="border p-1 rounded bg-gray-800 text-white"
+//                             onChange={(e) => e.target.value && openModal(e.target.value, item.cab?.[e.target.value])}
+//                           >
+//                             <option value="">Select</option>
+//                             <option value="fuel">Fuel</option>
+//                             <option value="fastTag">FastTag</option>
+//                             <option value="tyrePuncture">Tyre</option>
+//                             <option value="vehicleServicing">Servicing</option>
+//                             <option value="otherProblems">Other Problems</option>
+//                           </select>
+//                         </td>
+//                         <td className="p-3">
+//                           <div className="flex items-center gap-2">
+//                             <button
+//                               className={`text-green-400 transition-all duration-300 hover:scale-110 hover:shadow-md ${item.driver?.location ? "animate-pulse" : ""
+//                                 }`}
+//                               onClick={() => handleLocationClick(item)}
+//                               title="Track Location"
+//                               disabled={!wsConnected}
+//                             >
+//                               <MapPin size={16} />
+//                             </button>
+//                             {item.driver?.location && <span className="text-xs text-green-400">Live</span>}
+//                           </div>
+//                         </td>
+//                         <td className="p-2">
+//                           {/* Replace PDFDownloadLink with a regular button */}
+//                           <button 
+//                             onClick={() => handleGenerateInvoice(item)}
+//                             className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+//                           >
+//                             Generate Invoice
+//                           </button>
+//                         </td>
+//                       </tr>
+//                     ))
+//                   ) : (
+//                     <tr>
+//                       <td colSpan="9" className="p-4 text-center">
+//                         No results found
+//                       </td>
+//                     </tr>
+//                   )}
+//                 </tbody>
+//               </table>
+//             </div>
+
+//             {/* Mobile Card View */}
+//             <div className="md:hidden space-y-3">
+//               {filteredCabs.length > 0 ? (
+//                 filteredCabs.map((item, index) => (
+//                   <div key={index} className="bg-gray-700 p-4 rounded-lg shadow">
+//                     <div className="grid grid-cols-2 gap-2 mb-3">
+//                       <div>
+//                         <p className="text-gray-400 text-sm">Cab No</p>
+//                         <p className="font-medium">{item.cab?.cabNumber || "N/A"}</p>
+//                       </div>
+//                       <div>
+//                         <p className="text-gray-400 text-sm">Driver</p>
+//                         <p>{item.driver?.name || "N/A"}</p>
+//                       </div>
+//                       <div>
+//                         <p className="text-gray-400 text-sm">Assigned Date</p>
+//                         <p>{item.assignedAt ? new Date(item.assignedAt).toLocaleDateString() : "N/A"}</p>
+//                       </div>
+//                       <div>
+//                         <p className="text-gray-400 text-sm">Distance</p>
+//                         <p>{item.cab?.tripDetails?.location?.totalDistance || "0"} KM</p>
+//                       </div>
+//                     </div>
+//                     <div className="mb-3">
+//                       <p className="text-gray-400 text-sm">Route</p>
+//                       <p>
+//                         {item.cab?.tripDetails?.location?.from || "N/A"} → {item.cab?.tripDetails?.location?.to || "N/A"}
+//                       </p>
+//                     </div>
+//                     <div className="flex gap-2 mb-2">
+//                       <select
+//                         className="w-full border p-2 rounded bg-gray-800 text-white"
+//                         onChange={(e) => e.target.value && openModal(e.target.value, item.cab?.[e.target.value])}
+//                       >
+//                         <option value="">View Details</option>
+//                         <option value="fuel">Fuel Details</option>
+//                         <option value="fastTag">FastTag Details</option>
+//                         <option value="tyrePuncture">Tyre Details</option>
+//                         <option value="vehicleServicing">Servicing Details</option>
+//                         <option value="otherProblems">Other Problems</option>
+//                       </select>
+//                       <button
+//                         className={`text-green-400 p-2 rounded border border-gray-600 ${item.driver?.location ? "animate-pulse" : ""
+//                           }`}
+//                         onClick={() => handleLocationClick(item)}
+//                         title="Track Location"
+//                         disabled={!wsConnected}
+//                       >
+//                         <MapPin size={16} />
+//                       </button>
+//                     </div>
+//                     {/* Replace PDFDownloadLink with a regular button */}
+//                     <button 
+//                       onClick={() => handleGenerateInvoice(item)}
+//                       className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+//                     >
+//                       Generate Invoice
+//                     </button>
+//                   </div>
+//                 ))
+//               ) : (
+//                 <div className="p-4 text-center bg-gray-700 rounded-lg">No results found</div>
+//               )}
+//             </div>
+//           </>
+//         )}
+//       </div>
+      
+//       {/* Modal for displaying details */}
+//       {activeModal && selectedDetail && (
+//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+//           <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
+//             <h3 className="text-xl font-semibold mb-4 capitalize">{activeModal} Details</h3>
+//             <div className="space-y-3">
+//               {activeModal === "fuel" && (
+//                 <>
+//                   <div className="grid grid-cols-2 gap-4">
+//                     <div>
+//                       <p className="text-gray-400">Date</p>
+//                       <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Amount</p>
+//                       <p>{selectedDetail?.amount || "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Liters</p>
+//                       <p>{selectedDetail?.liters || "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Rate</p>
+//                       <p>{selectedDetail?.rate || "N/A"}</p>
+//                     </div>
+//                   </div>
+//                   {selectedDetail?.receiptImage && (
+//                     <div className="mt-4">
+//                       <p className="text-gray-400 mb-2">Receipt</p>
+//                       <img 
+//                         src={selectedDetail.receiptImage} 
+//                         alt="Fuel Receipt" 
+//                         className="rounded cursor-pointer"
+//                         onClick={() => {
+//                           setSelectedImage(selectedDetail.receiptImage);
+//                           setImageModalOpen(true);
+//                         }} 
+//                       />
+//                     </div>
+//                   )}
+//                 </>
+//               )}
+
+//               {activeModal === "fastTag" && (
+//                 <>
+//                   <div className="grid grid-cols-2 gap-4">
+//                     <div>
+//                       <p className="text-gray-400">Date</p>
+//                       <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Amount</p>
+//                       <p>{selectedDetail?.amount || "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Location</p>
+//                       <p>{selectedDetail?.location || "N/A"}</p>
+//                     </div>
+//                   </div>
+//                   {selectedDetail?.receiptImage && (
+//                     <div className="mt-4">
+//                       <p className="text-gray-400 mb-2">Receipt</p>
+//                       <img 
+//                         src={selectedDetail.receiptImage} 
+//                         alt="FastTag Receipt" 
+//                         className="rounded cursor-pointer"
+//                         onClick={() => {
+//                           setSelectedImage(selectedDetail.receiptImage);
+//                           setImageModalOpen(true);
+//                         }} 
+//                       />
+//                     </div>
+//                   )}
+//                 </>
+//               )}
+
+//               {activeModal === "tyrePuncture" && (
+//                 <>
+//                   <div className="grid grid-cols-2 gap-4">
+//                     <div>
+//                       <p className="text-gray-400">Date</p>
+//                       <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Amount</p>
+//                       <p>{selectedDetail?.amount || "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Location</p>
+//                       <p>{selectedDetail?.location || "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Description</p>
+//                       <p>{selectedDetail?.description || "N/A"}</p>
+//                     </div>
+//                   </div>
+//                   {selectedDetail?.receiptImage && (
+//                     <div className="mt-4">
+//                       <p className="text-gray-400 mb-2">Receipt</p>
+//                       <img 
+//                         src={selectedDetail.receiptImage} 
+//                         alt="Tyre Receipt" 
+//                         className="rounded cursor-pointer"
+//                         onClick={() => {
+//                           setSelectedImage(selectedDetail.receiptImage);
+//                           setImageModalOpen(true);
+//                         }} 
+//                       />
+//                     </div>
+//                   )}
+//                 </>
+//               )}
+
+//               {activeModal === "vehicleServicing" && (
+//                 <>
+//                   <div className="grid grid-cols-2 gap-4">
+//                     <div>
+//                       <p className="text-gray-400">Date</p>
+//                       <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Amount</p>
+//                       <p>{selectedDetail?.amount || "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Location</p>
+//                       <p>{selectedDetail?.location || "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Description</p>
+//                       <p>{selectedDetail?.description || "N/A"}</p>
+//                     </div>
+//                   </div>
+//                   {selectedDetail?.receiptImage && (
+//                     <div className="mt-4">
+//                       <p className="text-gray-400 mb-2">Receipt</p>
+//                       <img 
+//                         src={selectedDetail.receiptImage} 
+//                         alt="Servicing Receipt" 
+//                         className="rounded cursor-pointer"
+//                         onClick={() => {
+//                           setSelectedImage(selectedDetail.receiptImage);
+//                           setImageModalOpen(true);
+//                         }} 
+//                       />
+//                     </div>
+//                   )}
+//                 </>
+//               )}
+
+//               {activeModal === "otherProblems" && (
+//                 <>
+//                   <div className="grid grid-cols-2 gap-4">
+//                     <div>
+//                       <p className="text-gray-400">Date</p>
+//                       <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Amount</p>
+//                       <p>{selectedDetail?.amount || "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Location</p>
+//                       <p>{selectedDetail?.location || "N/A"}</p>
+//                     </div>
+//                     <div>
+//                       <p className="text-gray-400">Description</p>
+//                       <p>{selectedDetail?.description || "N/A"}</p>
+//                     </div>
+//                   </div>
+//                   {selectedDetail?.receiptImage && (
+//                     <div className="mt-4">
+//                       <p className="text-gray-400 mb-2">Receipt</p>
+//                       <img 
+//                         src={selectedDetail.receiptImage} 
+//                         alt="Receipt" 
+//                         className="rounded cursor-pointer"
+//                         onClick={() => {
+//                           setSelectedImage(selectedDetail.receiptImage);
+//                           setImageModalOpen(true);
+//                         }} 
+//                       />
+//                     </div>
+//                   )}
+//                 </>
+//               )}
+//             </div>
+//             <div className="mt-6 flex justify-end">
+//               <button
+//                 onClick={() => {
+//                   setActiveModal("");
+//                   setSelectedDetail(null);
+//                 }}
+//                 className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+//               >
+//                 Close
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Image Modal */}
+//       {imageModalOpen && selectedImage && (
+//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+//           <div className="relative max-w-2xl max-h-full">
+//             <button
+//               onClick={() => setImageModalOpen(false)}
+//               className="absolute top-2 right-2 bg-gray-800 text-white rounded-full p-1"
+//             >
+//               X
+//             </button>
+//             <img src={selectedImage} alt="Receipt" className="max-w-full max-h-[80vh] rounded" />
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CabSearch;
+
+
+
+
+
+
+//with PDFLink
 
 
 "use client"
@@ -1478,10 +2208,10 @@ import React from 'react'
 import axios from "axios";
 import Sidebar from "../slidebar/page";
 import baseURL from "@/utils/api";
-// Remove PDF imports
 // import { PDFDownloadLink } from "@react-pdf/renderer";
 // import InvoicePDF from "../components/InvoicePDF";
-import { MapPin } from "lucide-react";
+// Import the missing MapPin icon
+import { MapPin } from "lucide-react"; // Add this import
 
 const driverLocations = {};
 
@@ -1737,18 +2467,6 @@ const CabSearch = () => {
     }, 3000)
   }
 
-  // Handle invoice generation separately
-  const handleGenerateInvoice = (item) => {
-    // You will implement your custom PDF generation logic here
-    console.log("Generate invoice for:", item)
-    setNotification(`Preparing invoice for ${item.cab?.cabNumber}...`)
-    
-    // Clear notification after 3 seconds
-    setTimeout(() => {
-      setNotification("")
-    }, 3000)
-  }
-
   return (
     <div className="flex min-h-screen bg-gray-800">
       <Sidebar></Sidebar>
@@ -1882,15 +2600,30 @@ const CabSearch = () => {
                             {item.driver?.location && <span className="text-xs text-green-400">Live</span>}
                           </div>
                         </td>
-                        <td className="p-2">
-                          {/* Replace PDFDownloadLink with a regular button */}
-                          <button 
-                            onClick={() => handleGenerateInvoice(item)}
-                            className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                        {/* <td className="p-2">
+                          <PDFDownloadLink
+                            document={
+                              <InvoicePDF
+                                cabData={cabData}
+                                trip={item}
+                                companyLogo={companyLogo}
+                                signature={signature}
+                                companyPrefix={derivePrefix(subCompanyName)}
+                                companyInfo={companyInfo}
+                                companyName={subCompanyName}
+                                invoiceNumber={invoiceNumber || `${derivePrefix(subCompanyName)}-${String(item.invoiceSerial).padStart(5, "0")}`}
+                                invoiceDate={new Date().toLocaleDateString("en-IN")}
+                              />
+                            }
+                            fileName={`Invoice-${item?.cab?.cabNumber}.pdf`}
                           >
-                            Generate Invoice
-                          </button>
-                        </td>
+                            {({ loading }) => (
+                              <button className="w-full bg-green-600 text-white px-4 py-2 rounded">
+                                {loading ? "Generating PDF..." : "Download Invoice"}
+                              </button>
+                            )}
+                          </PDFDownloadLink>
+                        </td> */}
                       </tr>
                     ))
                   ) : (
@@ -1955,13 +2688,27 @@ const CabSearch = () => {
                         <MapPin size={16} />
                       </button>
                     </div>
-                    {/* Replace PDFDownloadLink with a regular button */}
-                    <button 
-                      onClick={() => handleGenerateInvoice(item)}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                    {/* <PDFDownloadLink
+                      document={
+                        <InvoicePDF
+                          trip={item}
+                          companyLogo={companyLogo}
+                          signature={signature}
+                          companyPrefix={derivePrefix(subCompanyName)}
+                          companyInfo={companyInfo}
+                          companyName={subCompanyName}
+                          invoiceNumber={invoiceNumber || `${derivePrefix(subCompanyName)}-${String(item.invoiceSerial).padStart(5, "0")}`}
+                          invoiceDate={new Date().toLocaleDateString("en-IN")}
+                        />
+                      }
+                      fileName={`Invoice-${item?.cab?.cabNumber}.pdf`}
                     >
-                      Generate Invoice
-                    </button>
+                      {({ loading }) => (
+                        <button className="w-full bg-green-600 text-white px-4 py-2 rounded">
+                          {loading ? "Generating PDF..." : "Download Invoice"}
+                        </button>
+                      )}
+                    </PDFDownloadLink> */}
                   </div>
                 ))
               ) : (
@@ -1971,235 +2718,11 @@ const CabSearch = () => {
           </>
         )}
       </div>
-      
-      {/* Modal for displaying details */}
-      {activeModal && selectedDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
-            <h3 className="text-xl font-semibold mb-4 capitalize">{activeModal} Details</h3>
-            <div className="space-y-3">
-              {activeModal === "fuel" && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-gray-400">Date</p>
-                      <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Amount</p>
-                      <p>{selectedDetail?.amount || "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Liters</p>
-                      <p>{selectedDetail?.liters || "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Rate</p>
-                      <p>{selectedDetail?.rate || "N/A"}</p>
-                    </div>
-                  </div>
-                  {selectedDetail?.receiptImage && (
-                    <div className="mt-4">
-                      <p className="text-gray-400 mb-2">Receipt</p>
-                      <img 
-                        src={selectedDetail.receiptImage} 
-                        alt="Fuel Receipt" 
-                        className="rounded cursor-pointer"
-                        onClick={() => {
-                          setSelectedImage(selectedDetail.receiptImage);
-                          setImageModalOpen(true);
-                        }} 
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-
-              {activeModal === "fastTag" && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-gray-400">Date</p>
-                      <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Amount</p>
-                      <p>{selectedDetail?.amount || "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Location</p>
-                      <p>{selectedDetail?.location || "N/A"}</p>
-                    </div>
-                  </div>
-                  {selectedDetail?.receiptImage && (
-                    <div className="mt-4">
-                      <p className="text-gray-400 mb-2">Receipt</p>
-                      <img 
-                        src={selectedDetail.receiptImage} 
-                        alt="FastTag Receipt" 
-                        className="rounded cursor-pointer"
-                        onClick={() => {
-                          setSelectedImage(selectedDetail.receiptImage);
-                          setImageModalOpen(true);
-                        }} 
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-
-              {activeModal === "tyrePuncture" && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-gray-400">Date</p>
-                      <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Amount</p>
-                      <p>{selectedDetail?.amount || "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Location</p>
-                      <p>{selectedDetail?.location || "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Description</p>
-                      <p>{selectedDetail?.description || "N/A"}</p>
-                    </div>
-                  </div>
-                  {selectedDetail?.receiptImage && (
-                    <div className="mt-4">
-                      <p className="text-gray-400 mb-2">Receipt</p>
-                      <img 
-                        src={selectedDetail.receiptImage} 
-                        alt="Tyre Receipt" 
-                        className="rounded cursor-pointer"
-                        onClick={() => {
-                          setSelectedImage(selectedDetail.receiptImage);
-                          setImageModalOpen(true);
-                        }} 
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-
-              {activeModal === "vehicleServicing" && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-gray-400">Date</p>
-                      <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Amount</p>
-                      <p>{selectedDetail?.amount || "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Location</p>
-                      <p>{selectedDetail?.location || "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Description</p>
-                      <p>{selectedDetail?.description || "N/A"}</p>
-                    </div>
-                  </div>
-                  {selectedDetail?.receiptImage && (
-                    <div className="mt-4">
-                      <p className="text-gray-400 mb-2">Receipt</p>
-                      <img 
-                        src={selectedDetail.receiptImage} 
-                        alt="Servicing Receipt" 
-                        className="rounded cursor-pointer"
-                        onClick={() => {
-                          setSelectedImage(selectedDetail.receiptImage);
-                          setImageModalOpen(true);
-                        }} 
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-
-              {activeModal === "otherProblems" && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-gray-400">Date</p>
-                      <p>{selectedDetail?.date ? new Date(selectedDetail.date).toLocaleDateString() : "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Amount</p>
-                      <p>{selectedDetail?.amount || "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Location</p>
-                      <p>{selectedDetail?.location || "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Description</p>
-                      <p>{selectedDetail?.description || "N/A"}</p>
-                    </div>
-                  </div>
-                  {selectedDetail?.receiptImage && (
-                    <div className="mt-4">
-                      <p className="text-gray-400 mb-2">Receipt</p>
-                      <img 
-                        src={selectedDetail.receiptImage} 
-                        alt="Receipt" 
-                        className="rounded cursor-pointer"
-                        onClick={() => {
-                          setSelectedImage(selectedDetail.receiptImage);
-                          setImageModalOpen(true);
-                        }} 
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => {
-                  setActiveModal("");
-                  setSelectedDetail(null);
-                }}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Image Modal */}
-      {imageModalOpen && selectedImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="relative max-w-2xl max-h-full">
-            <button
-              onClick={() => setImageModalOpen(false)}
-              className="absolute top-2 right-2 bg-gray-800 text-white rounded-full p-1"
-            >
-              X
-            </button>
-            <img src={selectedImage} alt="Receipt" className="max-w-full max-h-[80vh] rounded" />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default CabSearch;
-
-
-
-
-
-
-
 
 
 
