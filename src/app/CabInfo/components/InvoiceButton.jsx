@@ -135,6 +135,81 @@
 
 
 
+// "use client";
+
+// import { useState } from "react";
+
+// const InvoiceButton = ({
+//   item,
+//   cabData,
+//   companyInfo,
+//   companyLogo,
+//   signature,
+//   subCompanyName,
+//   invoiceNumber,
+//   derivePrefix,
+// }) => {
+//   const [isGenerating, setIsGenerating] = useState(false);
+
+//   const handleGeneratePDF = async () => {
+//     setIsGenerating(true);
+
+//     try {
+//       const { pdf } = await import("@react-pdf/renderer");
+//       const { default: InvoicePDF } = await import("../../components/InvoicePDF");
+
+//       const invoiceId =
+//         invoiceNumber ||
+//         `${derivePrefix(subCompanyName)}-${String(item.invoiceSerial || 0).padStart(5, "0")}`;
+
+//       const invoiceDocument = (
+//         <InvoicePDF
+//           cabData={cabData}
+//           trip={item}
+//           companyLogo={companyLogo}
+//           signature={signature}
+//           companyPrefix={derivePrefix(subCompanyName)}
+//           companyInfo={companyInfo}
+//           companyName={subCompanyName}
+//           invoiceNumber={invoiceId}
+//           invoiceDate={new Date().toLocaleDateString("en-IN")}
+//         />
+//       );
+
+//       const blob = await pdf(invoiceDocument).toBlob();
+//       const url = URL.createObjectURL(blob);
+
+//       const downloadLink = document.createElement("a");
+//       downloadLink.href = url;
+//       downloadLink.download = `Invoice-${item?.cab?.cabNumber}.pdf`;
+//       document.body.appendChild(downloadLink);
+//       downloadLink.click();
+//       document.body.removeChild(downloadLink);
+
+//       URL.revokeObjectURL(url);
+//     } catch (error) {
+//       console.error("PDF generation error:", error);
+//       alert("Failed to generate PDF. Please try again.");
+//     } finally {
+//       setIsGenerating(false);
+//     }
+//   };
+
+//   return (
+//     <button
+//       onClick={handleGeneratePDF}
+//       disabled={isGenerating}
+//       className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+//     >
+//       {isGenerating ? "Generating PDF..." : "Download Invoice"}
+//     </button>
+//   );
+// };
+
+// export default InvoiceButton;
+
+
+
 "use client";
 
 import { useState } from "react";
@@ -151,45 +226,41 @@ const InvoiceButton = ({
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleGeneratePDF = async () => {
+  const handleDownloadPDF = async () => {
     setIsGenerating(true);
 
     try {
-      const { pdf } = await import("@react-pdf/renderer");
-      const { default: InvoicePDF } = await import("../../components/InvoicePDF");
+      const response = await fetch('/api/generate-invoice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          item,
+          cabData,
+          companyInfo,
+          companyLogo,
+          signature,
+          subCompanyName,
+          invoiceNumber,
+          derivePrefix: derivePrefix(subCompanyName),
+        }),
+      });
 
-      const invoiceId =
-        invoiceNumber ||
-        `${derivePrefix(subCompanyName)}-${String(item.invoiceSerial || 0).padStart(5, "0")}`;
+      if (!response.ok) throw new Error('Failed to generate PDF');
 
-      const invoiceDocument = (
-        <InvoicePDF
-          cabData={cabData}
-          trip={item}
-          companyLogo={companyLogo}
-          signature={signature}
-          companyPrefix={derivePrefix(subCompanyName)}
-          companyInfo={companyInfo}
-          companyName={subCompanyName}
-          invoiceNumber={invoiceId}
-          invoiceDate={new Date().toLocaleDateString("en-IN")}
-        />
-      );
-
-      const blob = await pdf(invoiceDocument).toBlob();
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
-
-      const downloadLink = document.createElement("a");
-      downloadLink.href = url;
-      downloadLink.download = `Invoice-${item?.cab?.cabNumber}.pdf`;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Invoice-${item?.cab?.cabNumber}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("PDF generation error:", error);
-      alert("Failed to generate PDF. Please try again.");
+      console.error("Client download error:", error);
+      alert("Failed to download invoice PDF.");
     } finally {
       setIsGenerating(false);
     }
@@ -197,7 +268,7 @@ const InvoiceButton = ({
 
   return (
     <button
-      onClick={handleGeneratePDF}
+      onClick={handleDownloadPDF}
       disabled={isGenerating}
       className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
     >
