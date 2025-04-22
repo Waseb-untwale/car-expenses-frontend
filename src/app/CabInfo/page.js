@@ -2208,9 +2208,17 @@ import React from 'react'
 import axios from "axios";
 import Sidebar from "../slidebar/page";
 import baseURL from "@/utils/api";
+import InvoiceButton from "./components/InvoiceButton";
 // import { PDFDownloadLink } from "@react-pdf/renderer";
 // import InvoicePDF from "../components/InvoicePDF";
 // Import the missing MapPin icon
+import dynamic from 'next/dynamic';
+
+// const PDFDownloadLink = dynamic(
+//   () => import('@react-pdf/renderer').then(mod => mod.PDFDownloadLink),
+//   { ssr: false }
+// );
+// import InvoicePDF from "../components/InvoicePDF";
 import { MapPin } from "lucide-react"; // Add this import
 
 const driverLocations = {};
@@ -2624,6 +2632,43 @@ const CabSearch = () => {
                             )}
                           </PDFDownloadLink>
                         </td> */}
+                        {/* <td className="p-2">
+  <PDFDownloadLink
+    document={
+      <InvoicePDF
+        cabData={cabData}
+        trip={item}
+        companyLogo={companyLogo}
+        signature={signature}
+        companyPrefix={derivePrefix(subCompanyName)}
+        companyInfo={companyInfo}
+        companyName={subCompanyName}
+        invoiceNumber={invoiceNumber || `${derivePrefix(subCompanyName)}-${String(item.invoiceSerial).padStart(5, "0")}`}
+        invoiceDate={new Date().toLocaleDateString("en-IN")}
+      />
+    }
+    fileName={`Invoice-${item?.cab?.cabNumber}.pdf`}
+  >
+    {({ loading }) => (
+      <button className="w-full bg-green-600 text-white px-4 py-2 rounded">
+        {loading ? "Generating PDF..." : "Download Invoice"}
+      </button>
+    )}
+  </PDFDownloadLink>
+</td> */}
+
+<td className="p-2">
+  <InvoiceButton 
+    item={item}
+    cabData={cabData}
+    companyLogo={companyLogo}
+    signature={signature}
+    companyInfo={companyInfo}
+    subCompanyName={subCompanyName}
+    invoiceNumber={invoiceNumber}
+    derivePrefix={derivePrefix}
+  />
+</td>
                       </tr>
                     ))
                   ) : (
@@ -2709,6 +2754,42 @@ const CabSearch = () => {
                         </button>
                       )}
                     </PDFDownloadLink> */}
+                    {/* <td className="p-2">
+  <PDFDownloadLink
+    document={
+      <InvoicePDF
+        cabData={cabData}
+        trip={item}
+        companyLogo={companyLogo}
+        signature={signature}
+        companyPrefix={derivePrefix(subCompanyName)}
+        companyInfo={companyInfo}
+        companyName={subCompanyName}
+        invoiceNumber={invoiceNumber || `${derivePrefix(subCompanyName)}-${String(item.invoiceSerial).padStart(5, "0")}`}
+        invoiceDate={new Date().toLocaleDateString("en-IN")}
+      />
+    }
+    fileName={`Invoice-${item?.cab?.cabNumber}.pdf`}
+  >
+    {({ loading }) => (
+      <button className="w-full bg-green-600 text-white px-4 py-2 rounded">
+        {loading ? "Generating PDF..." : "Download Invoice"}
+      </button>
+    )}
+  </PDFDownloadLink>
+</td> */}
+<td className="p-2">
+  <InvoiceButton 
+    item={item}
+    cabData={cabData}
+    companyLogo={companyLogo}
+    signature={signature}
+    companyInfo={companyInfo}
+    subCompanyName={subCompanyName}
+    invoiceNumber={invoiceNumber}
+    derivePrefix={derivePrefix}
+  />
+</td>
                   </div>
                 ))
               ) : (
