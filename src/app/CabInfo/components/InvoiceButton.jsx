@@ -6,19 +6,21 @@ const InvoiceButton = ({ item, cabData, companyInfo, companyLogo, signature, sub
   const [isGenerating, setIsGenerating] = useState(false);
   
   const handleGeneratePDF = async () => {
+    console.log("after container")
     setIsGenerating(true);
     
     try {
+      console.log("we are with minnat bhai")
       // Dynamic import of the PDF libraries
       const { PDFDownloadLink } = await import('@react-pdf/renderer');
       const { default: InvoicePDF } = await import('../../components/InvoicePDF');
-      console.log("we are with minnat bhai")
+      
       
       // Create a temporary element to render the PDF
       const container = document.createElement('div');
       container.style.display = 'none';
       document.body.appendChild(container);
-      console.log("after container")
+   
       
       // Render the PDF link
       const renderPDF = () => {
