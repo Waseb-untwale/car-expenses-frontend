@@ -12,11 +12,13 @@ const InvoiceButton = ({ item, cabData, companyInfo, companyLogo, signature, sub
       // Dynamic import of the PDF libraries
       const { PDFDownloadLink } = await import('@react-pdf/renderer');
       const { default: InvoicePDF } = await import('../../components/InvoicePDF');
+      console.log("we are with minnat bhai")
       
       // Create a temporary element to render the PDF
       const container = document.createElement('div');
       container.style.display = 'none';
       document.body.appendChild(container);
+      console.log("after container")
       
       // Render the PDF link
       const renderPDF = () => {
@@ -58,6 +60,8 @@ const InvoiceButton = ({ item, cabData, companyInfo, companyLogo, signature, sub
           </PDFDownloadLink>
         );
       };
+
+      console.log("after render")
       
       // Use ReactDOM to render the PDF link
       const ReactDOM = await import('react-dom/client');
