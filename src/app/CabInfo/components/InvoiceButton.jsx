@@ -13,7 +13,9 @@ const InvoiceButton = ({ item, cabData, companyInfo, companyLogo, signature, sub
       console.log("we are with minnat bhai")
       // Dynamic import of the PDF libraries
       const { PDFDownloadLink } = await import('@react-pdf/renderer');
+      console.log("PDFdOWNLOADlINK")
       const { default: InvoicePDF } = await import('../../components/InvoicePDF');
+      console.log("invoicePDF")
       
       
       // Create a temporary element to render the PDF
